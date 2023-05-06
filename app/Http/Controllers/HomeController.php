@@ -217,9 +217,7 @@ class HomeController extends Controller
     }
     
     public function deleteBrand(Request $request){
-        
-        
-        
+             
         $brand = Brand::find($request->id);
         $brand->delete();
         return redirect('/manage-brand/')->with('message','Brand deleted successfully!!');

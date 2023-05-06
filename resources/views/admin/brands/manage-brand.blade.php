@@ -18,43 +18,44 @@
 
             <div class="table-wrapper">
                 <div class="sl-page-title d-flex justify-content-end">
-                    <a type="button" href="{{route('add-brand')}}" class="btn btn-success">Add Brand</a>
+                    <a type="button" href="{{route('brand.create')}}" class="btn btn-success">Add Brand</a>
                 </div>
                 <table id="datatable1" class="table display responsive nowrap">
                     <thead>
-                    <tr>
-                        <th class="wd-15p">Name</th>
-                        <th class="wd-15p">Image</th>
-                        <th class="wd-15p">Status</th>
-                        <th class="wd-15p">Action</th>
+                        <tr>
+                            <th class="wd-15p">Name</th>
+                            <th class="wd-15p">Image</th>
+                            <th class="wd-15p">Status</th>
+                            <th class="wd-15p">Action</th>
 
-                    </tr>
+                        </tr>
                     </thead>
                     <tbody>
-                    @php($i=1)
-                    @foreach($brands as $brand)
+                        @php($i=1)
+                        @foreach($brands as $brand)
                         <tr>
                             <td>{{$brand->name}}</td>
                             <td><img src="{{$brand->image}}" height="70"></td>
                             <td>{{$brand->status == 1 ? 'Active' : 'Inactive'}}</td>
                             <td>
-                                <a title="Edit" href="{{route('edit-brand',['id'=>$brand->id])}}"  class="btn btn-primary"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-                                <a title="Delete" href="#" id="{{$brand->id}}" class="btn btn-danger"
-                                   onclick="event.preventDefault();
+                                <a title="Edit" href="{{route('brand.edit',['id'=>$brand->id])}}"
+                                    class="btn btn-primary"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                <a title="Delete" href="#" id="{{$brand->id}}" class="btn btn-danger" onclick="event.preventDefault();
                                        var check = confirm('Are you sure you want to delete?');
                                        if(check){
                                        document.getElementById('deleteBrandForm'+'{{$brand->id}}').submit();
-                                       }"
-                                ><i class="fa fa-trash" aria-hidden="true"></i></a>
-                                <form id="deleteBrandForm{{$brand->id}}" action="{{route('delete-brand')}}" method="post">
+                                       }"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                                <form id="deleteBrandForm{{$brand->id}}" action="{{route('brand.destroy',['id'=>$brand->id])}}"
+                                    method="post">
                                     @csrf
+                                    @method('DELETE')
                                     <input type="hidden" name="id" value="{{$brand->id}}">
                                 </form>
 
                             </td>
 
                         </tr>
-                    @endforeach
+                        @endforeach
                     </tbody>
                 </table>
             </div><!-- table-wrapper -->
@@ -103,4 +104,3 @@
     });
 </script>
 @endsection
-

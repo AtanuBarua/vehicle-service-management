@@ -18,7 +18,7 @@
 
             <div class="table-wrapper">
                 <div class="sl-page-title d-flex justify-content-end">
-                    <a type="button" href="{{route('add-product')}}" class="btn btn-success">Add Product</a>
+                    <a type="button" href="{{route('product.create')}}" class="btn btn-success">Add Product</a>
                 </div>
                 <table id="datatable1" class="table display responsive nowrap">
                     <thead>
@@ -45,7 +45,7 @@
                             <td>{{$product->stock}}</td>
                             <td>{{$product->status == 1 ? 'Shown' : 'Hidden'}}</td>
                             <td>
-                                <a title="Edit" href="{{route('edit-product',['id'=>$product->id])}}"  class="btn btn-sm btn-primary"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                <a title="Edit" href="{{route('product.edit',['id'=>$product->id])}}"  class="btn btn-sm btn-primary"><i class="fa fa-pencil" aria-hidden="true"></i></a>
                                 <a title="Delete" href="#" id="{{$product->id}}" class="btn btn-sm btn-danger"
                                    onclick="event.preventDefault();
                                        var check = confirm('Are you sure you want to delete?');
@@ -53,9 +53,9 @@
                                        document.getElementById('deleteProductForm'+'{{$product->id}}').submit();
                                        }"
                                 ><i class="fa fa-trash" aria-hidden="true"></i></a>
-                                <form id="deleteProductForm{{$product->id}}" action="{{route('delete-product')}}" method="post">
+                                <form id="deleteProductForm{{$product->id}}" action="{{route('product.destroy',['id'=>$product->id])}}" method="post">
                                     @csrf
-                                    <input type="hidden" name="id" value="{{$product->id}}">
+                                    @method('DELETE')
                                 </form>
 
                             </td>
