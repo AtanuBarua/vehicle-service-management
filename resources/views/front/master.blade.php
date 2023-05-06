@@ -164,7 +164,7 @@
                                         <li class=""><a href="{{route('client.book-service')}}">Book a Service</a></li>
                                         <li class=""><a href="{{route('admin-login')}}">Admin</a></li>
                                         <li class=""><a href="{{route('technician-login')}}">Technician</a></li>
-                                        <li class=""><a href="{{route('chat')}}">ChatBot</a></li>
+                                        {{-- <li class=""><a href="{{route('chat')}}">ChatBot</a></li> --}}
                                         
                                         <!-- <li class=""><a href="blog-left-sidebar.html">Blog <i class="ion-ios-arrow-down"></i></a>
                                             <ul class="hm-dropdown">
@@ -330,7 +330,7 @@
                                         <li class=""><a href="{{route('client.book-service')}}">Book a Service</a></li>
                                         <li class=""><a href="{{route('admin-login')}}">Admin</a></li>
                                         <li class=""><a href="{{route('technician-login')}}">Technician</a></li>
-                                        <li class=""><a href="{{route('chat')}}">ChatBot</a></li>
+                                        {{-- <li class=""><a href="{{route('chat')}}">ChatBot</a></li> --}}
                                         <!-- <li class=""><a href="blog-left-sidebar.html">Blog <i
                                                 class="ion-ios-arrow-down"></i></a>
                                             <ul class="hm-dropdown">
@@ -763,9 +763,9 @@
                                 <li class="menu-item-has-children active"><a href="{{route('technician-login')}}"><span
                                     class="mm-text">Technician</span></a>       
                                 </li>
-                                <li class="menu-item-has-children active"><a href="{{route('chat')}}"><span
+                                {{-- <li class="menu-item-has-children active"><a href="{{route('chat')}}"><span
                                     class="mm-text">ChatBot</span></a>       
-                                </li>
+                                </li> --}}
                                 
                                 <!-- <li class="menu-item-has-children">
                                     <a href="shop-left-sidebar.html">
