@@ -15,7 +15,7 @@
 
             <div class="table-wrapper">
                 <div class="sl-page-title d-flex justify-content-end">
-                    <a type="button" href="{{route('add-category')}}" class="btn btn-success">Add Category</a>
+                    <a type="button" href="{{route('category.create')}}" class="btn btn-success">Add Category</a>
                 </div>
                 <table id="datatable1" class="table display responsive nowrap">
                     <thead>
@@ -35,7 +35,7 @@
                             <td><img src="{{$category->image}}" height="100"></td>
                             <td>{{$category->status == 1 ? 'Active' : 'Inactive'}}</td>
                             <td>
-                                <a title="Edit" href="{{route('edit-category',['id'=>$category->id])}}"  class="btn btn-primary"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                <a title="Edit" href="{{route('category.edit',['id'=>$category->id])}}"  class="btn btn-primary"><i class="fa fa-pencil" aria-hidden="true"></i></a>
                                 <a title="Delete" href="#" id="{{$category->id}}" class="btn btn-danger"
                                  onclick="event.preventDefault();
                                  var check = confirm('Are you sure you want to delete?');
@@ -44,8 +44,9 @@
                                  }"
                                  ><i class="fa fa-trash" aria-hidden="true"></i>
                              </a>
-                             <form id="deleteCategoryForm{{$category->id}}" action="{{route('delete-category')}}" method="post">
+                             <form id="deleteCategoryForm{{$category->id}}" action="{{route('category.destroy',['id'=>$category->id])}}" method="post">
                                 @csrf
+                                @method('DELETE')
                                 <input type="hidden" name="id" value="{{$category->id}}">
                             </form>
 

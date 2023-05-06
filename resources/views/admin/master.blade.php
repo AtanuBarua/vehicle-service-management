@@ -83,19 +83,19 @@
             </div><!-- menu-item -->
         </a><!-- sl-menu-link --> 
         
-        <a href="{{route('manage-category')}}" class="sl-menu-link">
+        <a href="{{route('category.index')}}" class="sl-menu-link">
             <div class="sl-menu-item">
                 <i class="menu-item-icon icon ion-ios-photos-outline tx-20"></i>
                 <span class="menu-item-label">Categories</span>
             </div><!-- menu-item -->
         </a><!-- sl-menu-link --> 
-        <a href="{{route('manage-brand')}}" class="sl-menu-link">
+        <a href="{{route('brand.index')}}" class="sl-menu-link">
             <div class="sl-menu-item">
                 <i class="menu-item-icon icon ion-ios-photos-outline tx-20"></i>
                 <span class="menu-item-label">Brands</span>
             </div><!-- menu-item -->
         </a><!-- sl-menu-link --> 
-        <a href="{{route('manage-product')}}" class="sl-menu-link">
+        <a href="{{route('product.index')}}" class="sl-menu-link">
             <div class="sl-menu-item">
                 <i class="menu-item-icon icon ion-ios-photos-outline tx-20"></i>
                 <span class="menu-item-label">Products</span>

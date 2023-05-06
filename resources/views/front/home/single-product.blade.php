@@ -30,7 +30,7 @@
                             "asNavFor": ".sp-img_slider-nav"
                         }'>
                         <div class="single-slide red zoom">
-                            <img src="{{asset($product->image)}}" alt="Uren's Product Image">
+                            <img loading="lazy" src="{{asset($product->image)}}" alt="Uren's Product Image">
                         </div>
                         <div class="single-slide orange zoom">
                             <img src="{{asset('/')}}assets/front/images/product/large-size/2.jpg" alt="Uren's Product Image">
@@ -100,7 +100,7 @@
                 </div>
                 <div class="sp-essential_stuff">
                     <ul>
-                        <li>Brands <a href="javascript:void(0)">{{$product->brand_name}}</a></li>
+                        <li>Brands <a href="javascript:void(0)">{{$product->brand->name}}</a></li>
                         <li>Product Code: <a href="javascript:void(0)">Product 16</a></li>
                         <!--                                         <li>Reward Points: <a href="javascript:void(0)">100</a></li>
                         -->    
@@ -255,7 +255,7 @@
                                             <tbody>
                                                 @foreach($reviews as $review)
                                                 <tr>
-                                                    <td style="width: 50%;"><strong>{{$review->name}}</strong></td>
+                                                    <td style="width: 50%;"><strong>{{$review->user->name}}</strong></td>
                                                     <td class="text-right">15/09/20</td>
                                                 </tr>
                                                 <tr>
@@ -375,12 +375,12 @@
                             <div class="product-img">
                                 <a href="{{route('single-product',['slug'=>$product->slug])}}">
                                     @if(str_contains($product->image,'product-images'))
-                                    <img class="primary-img" src="{{asset($product->image)}}" alt="Uren's Product Image">
-                                    <img class="secondary-img" src="{{asset($product->image)}}" alt="Uren's Product Image">
+                                    <img loading="lazy" class="primary-img" src="{{asset($product->image)}}" alt="Uren's Product Image">
+                                    <img loading="lazy" class="secondary-img" src="{{asset($product->image)}}" alt="Uren's Product Image">
                                     
                                     @else
-                                    <img class="primary-img" src="{{asset($product->image)}}?random=<?php echo $i ?>" alt="Uren's Product Image">
-                                    <img class="secondary-img" src="{{asset($product->image)}}?random=<?php echo $i ?>" alt="Uren's Product Image">
+                                    <img loading="lazy" class="primary-img" src="{{asset($product->image)}}?random=<?php echo $i ?>" alt="Uren's Product Image">
+                                    <img loading="lazy" class="secondary-img" src="{{asset($product->image)}}?random=<?php echo $i ?>" alt="Uren's Product Image">
                                     @endif
                                 </a>
                                 

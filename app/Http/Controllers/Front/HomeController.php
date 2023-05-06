@@ -22,34 +22,25 @@ use Carbon\Carbon;
 use Cart;
 use Session;
 use Auth;
+use Illuminate\Support\Facades\Cache;
 
 class HomeController extends Controller
 {
     //
-    public function test(){
-        return view('test');
-    }
 
-    public function fileSubmit(Request $request){
+    public function index()
+    {
+        $categories = Category::where('status', 1)->get();
+        $brands = Brand::where('status', 1)->get();
 
-        $file = $request->file('file');
-        $file->move('test-files',$file);
-        //dd($request->all());
-    }
+        $products = Cache::remember('products', '1200', function () {
+            return Product::where('status', 1)->get();
+        });
+        $newProducts = $products->sortByDesc('id')->take(10);
+        $topProducts = $products->sortByDesc('sold')->take(10);
+        $popularBodykits = $products->where('category_id', 3)->sortByDesc('sold')->take(10);
 
-
-    public function index(){
-
-        
-        //return Cart::content();
-        // Session::forget('alert');
-        // Session::forget('message');
-        $categories = Category::where('status',1)->get();
-        $brands = Brand::where('status',1)->get();
-        $newProducts = Product::where('status',1)->orderBy('id','desc')->take(10)->get();
-        $topProducts = Product::where('status',1)->orderBy('sold','desc')->take(10)->get();
-        $popularBodykits = Product::where('status',1)->where('category_id',3)->orderBy('sold','desc')->take(10)->get();
-        return view('front.home.index',compact('categories','brands','newProducts','topProducts','popularBodykits'));
+        return view('front.home.index', compact('categories', 'brands', 'newProducts', 'topProducts', 'popularBodykits'));
     }
 
     // public function home(){
@@ -59,94 +50,73 @@ class HomeController extends Controller
     //     return view('front.client.home',compact('orders'));
     // }
 
-    
+    public function singleProduct($slug)
+    {
+        $product = Product::with('brand')->where('slug', $slug)->first();
 
-    public function singleProduct($slug){
-        //$product = Product::find($id);
+        $reviewer = Invoice::where('user_id', Auth::id())->where('product_id', $product->id)->where('reviewed', 0)->where('status', 1)->latest()->first();
 
-        $product = Product::where('slug',$slug)->first();
+        $reviews = $product->reviews()->where('status', 1)->get();
 
-        $reviewer = Invoice::where('user_id',Auth::id())->where('product_id',$product->id)->where('reviewed',0)->where('status',1)->latest()->first();
-        $product = DB::table('products')
-                        ->join('categories','categories.id','=','products.category_id')
-                        ->join('brands','brands.id','=','products.brand_id')
-                        ->where('products.slug',$slug)
-                        ->select('products.*','brands.name as brand_name','categories.name as category_name')
-                        ->first();
-        //$reviews = Review::where('status',1)->get();
-        $reviews = DB::table('reviews')
-                        ->join('users','users.id','=','reviews.user_id')
-                        ->where('reviews.status',1)
-                        ->where('reviews.product_id',$product->id)
-                        ->select('reviews.*','users.name')
-                        ->orderBy('reviews.id','desc')
-                        ->get();
+        $products = Cache::get('products');
 
-        $relatedProducts = Product::where('category_id',$product->category_id)
-                                ->where('id','!=',$product->id)
-                                ->orderBy('sold','desc')
-                                ->take(6)
-                                ->get();                
-                        
-        return view('front.home.single-product',compact('product','reviewer','reviews','relatedProducts'));
+        $relatedProducts = $products->where('id', '!=', $product->id)->sortByDesc('sold')->take(6);
+
+        return view('front.home.single-product', compact('product', 'reviewer', 'reviews', 'relatedProducts'));
+        // return view('front.home.single-product', compact('product'));
     }
 
-    public function categoryProducts($slug){
+    public function categoryProducts($slug)
+    {
+        $category = Category::where('slug', $slug)->firstOrFail();
 
-        $category = Category::where('slug',$slug)->first();
-        $products = Product::where('category_id',$category->id)->where('status',1)->orderBy('sold','desc')->paginate(12);
-        //return count($products);
-        return view('front.home.category-products',compact('products'));
+        $products = Product::where('category_id', $category->id)->where('status', 1)->latest('sold')->paginate(12);
+
+        return view('front.home.category-products', compact('products'));
     }
 
-    public function brandProducts($slug){
+    public function brandProducts($slug)
+    {
+        $brand = Brand::where('slug', $slug)->firstOrFail();
 
-        $brand = Brand::where('slug',$slug)->first();
-        $products = Product::where('brand_id',$brand->id)->where('status',1)->orderBy('sold','desc')->paginate(12);
-        return view('front.home.brand-products',compact('products'));
+        $products = Product::where('brand_id', $brand->id)->where('status', 1)->latest('sold')->paginate(12);
+        return view('front.home.brand-products', compact('products'));
     }
 
     public function addToCart(Request $request)
     {
-
-        //return $request->all();
         $product = Product::find($request->id);
-        //return $product;
 
-        if ($product->discount_price!=null) {
-            // code...
+        if ($product->discount_price != null) {
             Cart::add([
-            'id' => $product->id,
-            'name' => $product->name,
-            'qty' => $request->qty,
-            'price' => $product->discount_price,
-            'weight' => 550,
-            'options' =>
+                'id' => $product->id,
+                'name' => $product->name,
+                'qty' => $request->qty,
+                'price' => $product->discount_price,
+                'weight' => 550,
+                'options' =>
                 ['image' => $product->image, 'slug' => $product->slug]
-        ]);
-        }
-
-        else{
+            ]);
+        } else {
             Cart::add([
-            'id' => $product->id,
-            'name' => $product->name,
-            'slug' => $product->slug,
-            'qty' => $request->qty,
-            'price' => $product->regular_price,
-            'weight' => 550,
-            'options' =>
+                'id' => $product->id,
+                'name' => $product->name,
+                'slug' => $product->slug,
+                'qty' => $request->qty,
+                'price' => $product->regular_price,
+                'weight' => 550,
+                'options' =>
                 ['image' => $product->image],
                 ['slug' => $product->slug],
-        ]);
+            ]);
         }
 
-        
         //return Cart::count();
         return response()->json(['success' => 'Added to Cart']);
-
     }
 
-    public function miniCart(){
+    public function miniCart()
+    {
         $cartItems = Cart::content();
         $cartQty = Cart::count();
         $cartTotal = Cart::subtotal();
@@ -159,7 +129,8 @@ class HomeController extends Controller
         ));
     }
 
-    public function cartAjax(){
+    public function cartAjax()
+    {
         $cartItems = Cart::content();
         $cartQty = Cart::count();
         $cartTotal = Cart::subtotal();
@@ -171,51 +142,51 @@ class HomeController extends Controller
 
         ));
     }
-
-
 
     public function cart()
     {
         $cartItems = Cart::content();
         //return $cartItems;
-        return view('front.home.cart',compact('cartItems'));
+        return view('front.home.cart', compact('cartItems'));
     }
 
-    public function updateCart(Request $request){
+    public function updateCart(Request $request)
+    {
         //return $request->all();
         Cart::update($request->id, $request->qty);
         return back();
     }
 
-    public function cartIncrement($rowId){
+    public function cartIncrement($rowId)
+    {
         $row = Cart::get($rowId);
         Cart::update($rowId, $row->qty + 1);
 
         return response()->json('increment');
-
     }
 
-    public function cartDecrement($rowId){
+    public function cartDecrement($rowId)
+    {
         $row = Cart::get($rowId);
         Cart::update($rowId, $row->qty - 1);
 
-        return response()->json('increment');
-
-    } 
-
-    public function checkout(){
-
-        $regions = Region::all();
-        $cartItems = Cart::content();
-        return view('front.home.checkout',compact('cartItems','regions'));
+        return response()->json('decrement');
     }
 
-    public function orderSubmit(Request $request){
-        if ($request->payment=="Card") {
+    public function checkout()
+    {
+        $regions = Region::all();
+        $cartItems = Cart::content();
+        return view('front.home.checkout', compact('cartItems', 'regions'));
+    }
+
+    public function orderSubmit(Request $request)
+    {
+        if ($request->payment == "Card") {
             // code...
             $allData = $request->all();
             //dd ($allData);
-            return view('front.client.stripe-payment',compact('allData'));
+            return view('front.client.stripe-payment', compact('allData'));
         }
         $order = new Order();
         $order->user_id = Auth::id();
@@ -233,171 +204,160 @@ class HomeController extends Controller
         $order = Order::latest()->first();
 
         $cartItems = Cart::content();
-        foreach($cartItems as $item){
-            $product = Product::where('name',$item->name)->first();
+        foreach ($cartItems as $item) {
+            $product = Product::where('name', $item->name)->first();
             $invoice = new Invoice();
             $invoice->order_id = $order->id;
             $invoice->product_id = $product->id;
             $invoice->user_id = Auth::id();
             $invoice->price = $item->price;
             $invoice->quantity = $item->qty;
-            $invoice->subtotal = $item->price*$item->qty;
+            $invoice->subtotal = $item->price * $item->qty;
             $invoice->status = 0;
             $invoice->reviewed = 0;
             $invoice->save();
 
             $product->stock = $product->stock - $item->qty;
-            
+
             $product->save();
         }
         Cart::destroy();
         //Session::put('message', 'Order competed successfully!');
         return redirect(route('/'))->with('message', 'Order submitted successfully!');
-
-
     }
 
-    public function minicartItemRemove($id){
-
+    public function minicartItemRemove($id)
+    {
         Cart::remove($id);
         return response()->json(['success' => 'Removed from Cart']);
-
     }
 
-    public function cartItemRemove($id){
-
+    public function cartItemRemove($id)
+    {
         Cart::remove($id);
         return redirect()->back();
-
     }
 
     public function getCities(Request $request)
     {
-
         $region_id = $request->region_id;
 
-        $cities = City::where('region_id',$region_id)->get();
+        $cities = City::where('region_id', $region_id)->get();
         return response()->json([
             'cities' => $cities
         ]);
     }
 
-    public function availableTimes(Request $request){
-        $booking1 = count(Booking::where('date',$request->date)->where('time','10am - 2pm')->get());
-        $booking2 = count(Booking::where('date',$request->date)->where('time','2pm - 6pm')->get());
+    public function availableTimes(Request $request)
+    {
+        $booking1 = count(Booking::where('date', $request->date)->where('time', '10am - 2pm')->get());
+        $booking2 = count(Booking::where('date', $request->date)->where('time', '2pm - 6pm')->get());
 
         // $available1 = "";
         // $available2 = "";
         // $available3 = "";
-        
-        if($booking1<5 && $booking2<5){
+
+        if ($booking1 < 5 && $booking2 < 5) {
             return response()->json([
                 'available1' => '10am - 2pm',
             ]);
-        }
-        elseif($booking1<5 && $booking>=5){
+        } elseif ($booking1 < 5 && $booking >= 5) {
             return response()->json([
                 'available2' => '10am - 2pm',
             ]);
-        }
-
-        elseif($booking1>=5 && $booking2<5){
+        } elseif ($booking1 >= 5 && $booking2 < 5) {
             return response()->json([
                 'available3' => '2pm - 6pm',
             ]);
         }
-        
-
     }
 
-     //chat---------------------------------------------------
-     public function chat()
-     {
-         // code...
-         //$chats = Chat::all(); 
-         Chat::where('created_at', '<', Carbon::now()->subMinutes(20))->delete();
-         return view('front.home.chat');
-     }
-     
-     public function sendChat(Request $request){
-         //return $request->all();
-         $chats = Chat::all();
-         
-         $chat = new Chat();
-         $chat->message = $request->message;
-         $chat->user_id = Auth::id();
-         $chat->save();
-         
-         $lastChat = Chat::latest()->first();
-         
-         $delimiter = ' ';
-         $words = explode($delimiter, $lastChat->message);
-         
-         foreach ($words as $word) {
-             $reply = BotQuestion::where('question','LIKE','%'.$word.'%')->first();
-             if ($reply) {
-                 // code...
-                 break;
-             }
-             
-         }
-         
-         // $reply = BotQuestion::where('question','LIKE','%'.$lastChat->message.'%')->first();
-         
-         $trainBots = "";
-         $answer = "";
-         
-         if ($reply) {
-             // code...
-             $trainBots = TrainBot::where('question_id',$reply->id)->first();
-         }
-         
-         if (!$trainBots == "") {
-             // code...
-             $answer = BotAnswer::find($trainBots->answer_id);
-         }
-           
-         // if (!$answer == "") {
-         //     // code...
-         //     $chat = new Chat();
-         //     $chat->message = $answer->answer;
-         //     $chat->user_id = Auth::id();
-         //     $chat->reply = 1;
-         //     $chat->save();
-         // }
-         
-         
-         return response()->json(array(
-             'reply' => $answer,   
-         ));
-         
-     }
-     
-     public function reply(Request $request){
-         $chat = new Chat();
- 
-         if($request->answer){
-             $chat->message = $request->answer;
-             $chat->user_id = Auth::id();
-             $chat->reply = 1;
-             $chat->save();
-         }
-         else{
-             $defaultAnswer = BotAnswer::where('defaultAnswer', 1)->first();
-             $chat->message = $defaultAnswer->answer;
-             $chat->user_id = Auth::id();
-             $chat->reply = 1;
-             $chat->save();
-         }
-         
-         return response()->json("Reply");
-     }
-     
-     public function chats(){
-         //$chats = Chat::orderBy('id','desc')->take(4)->get();
-         $chats = Chat::all()->where('user_id',Auth::id())->take(-10);
-         return response()->json(array(
-             'chats' => $chats,      
-         ));
-     }
+    //chat---------------------------------------------------
+    public function chat()
+    {
+        // code...
+        //$chats = Chat::all(); 
+        Chat::where('created_at', '<', Carbon::now()->subMinutes(20))->delete();
+        return view('front.home.chat');
+    }
+
+    public function sendChat(Request $request)
+    {
+        //return $request->all();
+        $chats = Chat::all();
+
+        $chat = new Chat();
+        $chat->message = $request->message;
+        $chat->user_id = Auth::id();
+        $chat->save();
+
+        $lastChat = Chat::latest()->first();
+
+        $delimiter = ' ';
+        $words = explode($delimiter, $lastChat->message);
+
+        foreach ($words as $word) {
+            $reply = BotQuestion::where('question', 'LIKE', '%' . $word . '%')->first();
+            if ($reply) {
+                // code...
+                break;
+            }
+        }
+
+        // $reply = BotQuestion::where('question','LIKE','%'.$lastChat->message.'%')->first();
+
+        $trainBots = "";
+        $answer = "";
+
+        if ($reply) {
+            // code...
+            $trainBots = TrainBot::where('question_id', $reply->id)->first();
+        }
+
+        if (!$trainBots == "") {
+            // code...
+            $answer = BotAnswer::find($trainBots->answer_id);
+        }
+
+        // if (!$answer == "") {
+        //     // code...
+        //     $chat = new Chat();
+        //     $chat->message = $answer->answer;
+        //     $chat->user_id = Auth::id();
+        //     $chat->reply = 1;
+        //     $chat->save();
+        // }
+        return response()->json(array(
+            'reply' => $answer,
+        ));
+    }
+
+    public function reply(Request $request)
+    {
+        $chat = new Chat();
+
+        if ($request->answer) {
+            $chat->message = $request->answer;
+            $chat->user_id = Auth::id();
+            $chat->reply = 1;
+            $chat->save();
+        } else {
+            $defaultAnswer = BotAnswer::where('defaultAnswer', 1)->first();
+            $chat->message = $defaultAnswer->answer;
+            $chat->user_id = Auth::id();
+            $chat->reply = 1;
+            $chat->save();
+        }
+
+        return response()->json("Reply");
+    }
+
+    public function chats()
+    {
+        //$chats = Chat::orderBy('id','desc')->take(4)->get();
+        $chats = Chat::all()->where('user_id', Auth::id())->take(-10);
+        return response()->json(array(
+            'chats' => $chats,
+        ));
+    }
 }

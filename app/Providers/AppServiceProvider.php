@@ -32,5 +32,9 @@ class AppServiceProvider extends ServiceProvider
             $view->with('cartItems', Cart::content());
             $view->with('categories', Category::where('status',1)->get());
         });
+
+        // View::composer(['front.master','front.home.index'], function ($view){
+        //     $view->with('categories', Category::where('status',1)->get());
+        // });
     }
 }

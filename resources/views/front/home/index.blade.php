@@ -148,12 +148,12 @@
                                     <a href="{{route('single-product',['slug'=>$product->slug])}}">
                                         
                                         @if(str_contains($product->image,'product-images'))
-                                        <img class="primary-img" src="{{asset($product->image)}}" alt="Uren's Product Image">
-                                        <img class="secondary-img" src="{{asset($product->image)}}" alt="Uren's Product Image">
+                                        <img loading="lazy" class="primary-img" src="{{asset($product->image)}}" alt="Uren's Product Image">
+                                        <img loading="lazy" class="secondary-img" src="{{asset($product->image)}}" alt="Uren's Product Image">
 
                                         @else
-                                        <img class="primary-img" src="{{asset($product->image)}}?random=<?php echo $i ?>" alt="Uren's Product Image">
-                                        <img class="secondary-img" src="{{asset($product->image)}}?random=<?php echo $i ?>" alt="Uren's Product Image">
+                                        <img loading="lazy" class="primary-img" src="{{asset($product->image)}}?random=<?php echo $i ?>" alt="Uren's Product Image">
+                                        <img loading="lazy" class="secondary-img" src="{{asset($product->image)}}?random=<?php echo $i ?>" alt="Uren's Product Image">
                                         @endif
                                         
                                     </a>
@@ -269,12 +269,12 @@
                                     <a href="{{route('single-product',['slug'=>$product->slug])}}">
                                         
                                         @if(str_contains($product->image,'product-images'))
-                                        <img class="primary-img" src="{{asset($product->image)}}" alt="Uren's Product Image">
-                                        <img class="secondary-img" src="{{asset($product->image)}}" alt="Uren's Product Image">
+                                        <img loading="lazy" class="primary-img" src="{{asset($product->image)}}" alt="Uren's Product Image">
+                                        <img loading="lazy" class="secondary-img" src="{{asset($product->image)}}" alt="Uren's Product Image">
 
                                         @else
-                                        <img class="primary-img" src="{{asset($product->image)}}?random=<?php echo $i ?>" alt="Uren's Product Image">
-                                        <img class="secondary-img" src="{{asset($product->image)}}?random=<?php echo $i ?>" alt="Uren's Product Image">
+                                        <img loading="lazy" class="primary-img" src="{{asset($product->image)}}?random=<?php echo $i ?>" alt="Uren's Product Image">
+                                        <img loading="lazy" class="secondary-img" src="{{asset($product->image)}}?random=<?php echo $i ?>" alt="Uren's Product Image">
                                         @endif
                                         
                                     </a>
@@ -381,7 +381,7 @@
                         <div class="slide-inner">
                             <div class="slide-image_area">
                                 <a href="{{route('category-products',['slug'=>$category->slug])}}">
-                                    <img src="{{asset($category->image)}}" alt="Uren's Featured Categories">
+                                    <img loading="lazy" src="{{asset($category->image)}}" alt="Uren's Featured Categories">
                                 </a>
                             </div>
                             <div class="slide-content_area">
@@ -592,12 +592,12 @@
                                 <a href="{{route('single-product',['slug'=>$product->slug])}}">
                                     
                                     @if(str_contains($product->image,'product-images'))
-                                        <img class="primary-img" src="{{asset($product->image)}}" alt="Uren's Product Image">
-                                        <img class="secondary-img" src="{{asset($product->image)}}" alt="Uren's Product Image">
+                                        <img loading="lazy" class="primary-img" src="{{asset($product->image)}}" alt="Uren's Product Image">
+                                        <img loading="lazy" class="secondary-img" src="{{asset($product->image)}}" alt="Uren's Product Image">
 
                                         @else
-                                        <img class="primary-img" src="{{asset($product->image)}}?random=<?php echo $i ?>" alt="Uren's Product Image">
-                                        <img class="secondary-img" src="{{asset($product->image)}}?random=<?php echo $i ?>" alt="Uren's Product Image">
+                                        <img loading="lazy" class="primary-img" src="{{asset($product->image)}}?random=<?php echo $i ?>" alt="Uren's Product Image">
+                                        <img loading="lazy" class="secondary-img" src="{{asset($product->image)}}?random=<?php echo $i ?>" alt="Uren's Product Image">
                                         @endif
                                     
                                 </a>
@@ -1048,7 +1048,7 @@
                             <div class="inner-slide">
                                 <div class="single-product">
                                     <a href="{{route('brand-products',['slug'=>$brand->slug])}}">
-                                        <img src="{{asset($brand->image)}}" alt="Uren's Brand Image">
+                                        <img loading="lazy" src="{{asset($brand->image)}}" alt="Uren's Brand Image">
                                     </a>
                                 </div>
                             </div>
