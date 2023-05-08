@@ -15,11 +15,18 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    // public function __construct()
+    // {
+    //     $this->authorize('viewAny', Category::class);
+    // }
+
     public function index()
     {
-        return view('admin.categories.manage-category', [
-            'categories' => Category::all()
-        ]);
+        $this->authorize('viewAny', Category::class);
+        
+        $categories = Category::get();
+        $pageTitle = 'Manage Category';
+        return view('dashboard.categories.manage-category', compact('categories','pageTitle'));
     }
 
     /**
@@ -29,7 +36,9 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        return view('admin.categories.add-category');
+        $this->authorize('create', Category::class);
+
+        return view('dashboard.categories.add-category');
     }
 
     /**
@@ -40,6 +49,8 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', Category::class);
+
         $request->validate([
             'name' => 'required',
             'image' => 'required|mimes:jpeg,png,jpg,gif|max:2048',
@@ -85,7 +96,9 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-        return view('admin.categories.edit-category', compact('category'));
+        $this->authorize('update', $category);
+
+        return view('dashboard.categories.edit-category', compact('category'));
     }
 
     /**
@@ -97,6 +110,8 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
+        $this->authorize('update', $category);
+
         $request->validate([
             'name' => 'required',
             'status' => 'required',
@@ -142,6 +157,8 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
+        $this->authorize('delete', $category);
+
         $category->delete();
         return redirect('/category/')->with('message', 'Category deleted successfully!!');
     }

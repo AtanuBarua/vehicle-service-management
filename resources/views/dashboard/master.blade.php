@@ -54,7 +54,6 @@
 
 <body>
 
-
 <!-- ########## START: LEFT PANEL ########## -->
 <div class="sl-logo"><a href="{{route('/')}}"><i class="icon ion-android-star-outline"></i>Home</a></div>
 <div class="sl-sideleft">
@@ -66,114 +65,7 @@
     </div><!-- input-group -->
 
     <label class="sidebar-label">Navigation</label>
-    <div class="sl-sideleft-menu">
-        <a href="{{route('dashboard')}}" class="sl-menu-link {{ request()->is('dashboard') ? 'active' : '' }}">
-            <div class="sl-menu-item">
-                <i class="menu-item-icon icon ion-ios-home-outline tx-22"></i>
-                <span class="menu-item-label">Dashboard</span>
-            </div><!-- menu-item -->
-        </a><!-- sl-menu-link -->
-        
-        <a href="{{route('manage-city')}}" class="sl-menu-link {{ request()->is('cities*') ? 'active' : '' }}">
-            <div class="sl-menu-item">
-                <i class="menu-item-icon icon ion-ios-photos-outline tx-20"></i>
-                <span class="menu-item-label">Cities</span>
-            </div><!-- menu-item -->
-        </a><!-- sl-menu-link --> 
-        
-        @can('viewAny',\App\Category::class)
-        <a href="{{route('category.index')}}" class="sl-menu-link {{ request()->is('category*') ? 'active' : '' }}">
-            <div class="sl-menu-item">
-                <i class="menu-item-icon icon ion-ios-photos-outline tx-20"></i>
-                <span class="menu-item-label">Categories</span>
-            </div><!-- menu-item -->
-        </a><!-- sl-menu-link --> 
-        @endcan
-        
-        @can('viewAny',\App\Brand::class)
-        <a href="{{route('brand.index')}}" class="sl-menu-link {{ request()->is('brand*') ? 'active' : '' }}">
-            <div class="sl-menu-item">
-                <i class="menu-item-icon icon ion-ios-photos-outline tx-20"></i>
-                <span class="menu-item-label">Brands</span>
-            </div><!-- menu-item -->
-        </a><!-- sl-menu-link --> 
-        @endcan
-        
-        @can('viewAny',\App\Product::class)
-        <a href="{{route('product.index')}}" class="sl-menu-link {{ request()->is('product*') ? 'active' : '' }}">
-            <div class="sl-menu-item">
-                <i class="menu-item-icon icon ion-ios-photos-outline tx-20"></i>
-                <span class="menu-item-label">Products</span>
-            </div><!-- menu-item -->
-        </a><!-- sl-menu-link -->
-        @endcan
-        
-
-        @can('viewAny',\App\Order::class)
-        <a href="{{route('order.manage')}}" class="sl-menu-link {{ request()->is('order*') ? 'active' : '' }}">
-            <div class="sl-menu-item">
-                <i class="menu-item-icon icon ion-ios-photos-outline tx-20"></i>
-                <span class="menu-item-label">Orders</span>
-            </div><!-- menu-item -->
-        </a><!-- sl-menu-link --> 
-        @endcan
-        
-
-        @can('viewAny',\App\Service::class)
-        <a href="{{route('service.index')}}" class="sl-menu-link {{ request()->is('service*') ? 'active' : '' }}">
-            <div class="sl-menu-item">
-                <i class="menu-item-icon icon ion-ios-photos-outline tx-20"></i>
-                <span class="menu-item-label">Services</span>
-            </div><!-- menu-item -->
-        </a><!-- sl-menu-link --> 
-        @endcan
-        
-        @can('viewAny',\App\Booking::class)
-        <a href="{{route('booking.manage')}}" class="sl-menu-link {{ request()->is('booking*') ? 'active' : '' }}">
-            <div class="sl-menu-item">
-                <i class="menu-item-icon icon ion-ios-photos-outline tx-20"></i>
-                <span class="menu-item-label">Bookings</span>
-            </div><!-- menu-item -->
-        </a><!-- sl-menu-link --> 
-        @endcan
-        
-        @can('viewAny',\App\Technician::class)
-        <a href="{{route('technician.manage')}}" class="sl-menu-link {{ request()->is('technician*') ? 'active' : '' }}">
-            <div class="sl-menu-item">
-                <i class="menu-item-icon icon ion-ios-photos-outline tx-20"></i>
-                <span class="menu-item-label">Technicians</span>
-            </div><!-- menu-item -->
-        </a>
-        @endcan
-        
-
-        <a href="{{route('technician.jobs')}}" class="sl-menu-link {{ request()->is('job.*') ? 'active' : '' }}">
-            <div class="sl-menu-item">
-                <i class="menu-item-icon icon ion-ios-home-outline tx-22"></i>
-                <span class="menu-item-label">Jobs</span>
-            </div>
-        </a>
-
-        {{-- <a href="{{route('manage-chatbot')}}" class="sl-menu-link">
-            <div class="sl-menu-item">
-                <i class="menu-item-icon icon ion-ios-photos-outline tx-20"></i>
-                <span class="menu-item-label">Chatbot</span>
-            </div><!-- menu-item -->
-        </a> --}}
-
-        {{--<a href="#" class="sl-menu-link">
-            <div class="sl-menu-item">
-                <i class="menu-item-icon icon ion-ios-photos-outline tx-20"></i>
-                <span class="menu-item-label">Categories</span>
-                <i class="menu-item-arrow fa fa-angle-down"></i>
-            </div><!-- menu-item -->
-        </a>
-        <ul class="sl-menu-sub nav flex-column">
-            <li class="nav-item"><a href="{{route('add-category')}}" class="nav-link">Add Category</a></li>
-            <li class="nav-item"><a href="{{route('manage-category')}}" class="nav-link">Manage Category</a></li>
-        </ul>--}}
-    </div><!-- sl-sideleft-menu -->
-
+    @include('dashboard.include.sidebar')
     <br>
 </div><!-- sl-sideleft -->
 <!-- ########## END: LEFT PANEL ########## -->
@@ -185,31 +77,7 @@
         <div class="navicon-left hidden-lg-up"><a id="btnLeftMenuMobile" href=""><i class="icon ion-navicon-round"></i></a></div>
     </div><!-- sl-header-left -->
     <div class="sl-header-right">
-        <nav class="nav">
-            <div class="dropdown">
-                <a href="" class="nav-link nav-link-profile" data-toggle="dropdown">
-                    {{--<span class="logged-name">Jane<span class="hidden-md-down"> Doe</span></span>--}}
-                    {{-- <span class="logged-name">{{ Auth::guard('admin')->user()->name }}</span> --}}
-                    <span class="logged-name">{{ Auth::user()->name }}</span>
-                    <img src="{{asset('/')}}admin/assets/img/img3.jpg" class="wd-32 rounded-circle" alt="">
-                </a>
-                <div class="dropdown-menu dropdown-menu-header wd-200">
-                    <ul class="list-unstyled user-profile-nav">
-                        {{--<li><a href=""><i class="icon ion-ios-person-outline"></i> Edit Profile</a></li>
-                        <li><a href=""><i class="icon ion-ios-gear-outline"></i> Settings</a></li>
-                        <li><a href=""><i class="icon ion-ios-download-outline"></i> Downloads</a></li>
-                        <li><a href=""><i class="icon ion-ios-star-outline"></i> Favorites</a></li>
-                        <li><a href=""><i class="icon ion-ios-folder-outline"></i> Collections</a></li>--}}
-                        <li>
-                            <a href="#" onclick="event.preventDefault();document.getElementById('logoutForm').submit();"><i class="icon ion-power"></i> Sign Out</a>
-                            <form id="logoutForm" action="{{route('logout')}}" method="post">
-                                @csrf
-                            </form>
-                        </li>
-                    </ul>
-                </div><!-- dropdown-menu -->
-            </div><!-- dropdown -->
-        </nav>
+        @include('dashboard.include.navbar')
         <!-- <div class="navicon-right">
             <a id="btnRightMenu" href="" class="pos-relative">
                 <i class="icon ion-ios-bell-outline"></i>
@@ -383,26 +251,8 @@
 @yield('body')
 <!-- ########## END: MAIN PANEL ########## -->
 
-<script src="{{asset('/')}}admin/assets/lib/jquery/jquery.js"></script>
-<script src="{{asset('/')}}admin/assets/lib/popper.js/popper.js"></script>
-<script src="{{asset('/')}}admin/assets/lib/bootstrap/bootstrap.js"></script>
-<script src="{{asset('/')}}admin/assets/lib/jquery-ui/jquery-ui.js"></script>
-<script src="{{asset('/')}}admin/assets/lib/perfect-scrollbar/js/perfect-scrollbar.jquery.js"></script>
-<script src="{{asset('/')}}admin/assets/lib/jquery.sparkline.bower/jquery.sparkline.min.js"></script>
-<script src="{{asset('/')}}admin/assets/lib/d3/d3.js"></script>
-<script src="{{asset('/')}}admin/assets/lib/rickshaw/rickshaw.min.js"></script>
-<script src="{{asset('/')}}admin/assets/lib/chart.js/Chart.js"></script>
-<script src="{{asset('/')}}admin/assets/lib/Flot/jquery.flot.js"></script>
-<script src="{{asset('/')}}admin/assets/lib/Flot/jquery.flot.pie.js"></script>
-<script src="{{asset('/')}}admin/assets/lib/Flot/jquery.flot.resize.js"></script>
-<script src="{{asset('/')}}admin/assets/lib/flot-spline/jquery.flot.spline.js"></script>
+@include('dashboard.include.scripts')
 
-<script src="{{asset('/')}}admin/assets/js/starlight.js"></script>
-<script src="{{asset('/')}}admin/assets/js/ResizeSensor.js"></script>
-<script src="{{asset('/')}}admin/assets/js/dashboard.js"></script>
-<script src="{{asset('/')}}admin/ckeditor/ckeditor.js"></script>
-<script src="{{asset('/')}}admin/ckeditor/samples/js/sample.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 @yield('scripts')
 
 <script>

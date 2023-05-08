@@ -20,13 +20,16 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = DB::table('products')
-            ->join('categories', 'categories.id', '=', 'products.category_id')
-            ->join('brands', 'brands.id', '=', 'products.brand_id')
-            ->select('products.*', 'brands.name as brand_name', 'categories.name as category_name')
-            ->get();
+        $this->authorize('viewAny', Product::class);
 
-        return view('admin.products.manage-product', compact('products'));
+        $products = Product::with('category')->get();
+        // $products = DB::table('products')
+        //     ->join('categories', 'categories.id', '=', 'products.category_id')
+        //     ->join('brands', 'brands.id', '=', 'products.brand_id')
+        //     ->select('products.*', 'brands.name as brand_name', 'categories.name as category_name')
+        //     ->get();
+
+        return view('dashboard.products.manage-product', compact('products'));
     }
 
     /**
@@ -36,9 +39,11 @@ class ProductController extends Controller
      */
     public function create()
     {
-        $brands = Brand::all();
-        $categories = Category::all();
-        return view('admin.products.add-product', compact('brands', 'categories'));
+        $this->authorize('create', Product::class);
+
+        $brands = Brand::get();
+        $categories = Category::get();
+        return view('dashboard.products.add-product', compact('brands', 'categories'));
     }
 
     /**
@@ -49,6 +54,8 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', Product::class);
+
         $request->validate([
             'category_id' => 'required',
             'brand_id' => 'required',
@@ -109,9 +116,11 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $brands = Brand::all();
-        $categories = Category::all();
-        return view('admin.products.edit-product', compact('brands', 'categories', 'product'));
+        $this->authorize('update', $product);
+
+        $brands = Brand::get();
+        $categories = Category::get();
+        return view('dashboard.products.edit-product', compact('brands', 'categories', 'product'));
     }
 
     /**
@@ -123,6 +132,8 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
+        $this->authorize('update', $product);
+
         $request->validate([
             'category_id' => 'required',
             'brand_id' => 'required',
@@ -178,7 +189,6 @@ class ProductController extends Controller
             ]);
         }
 
-
         return redirect('/product/')->with('message', 'Product updated successfully!!');
     }
 
@@ -190,7 +200,8 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        // $product = Product::find($id);
+        $this->authorize('delete',$product);
+
         $product->delete();
         return redirect('/product/')->with('message', 'Product deleted successfully!!');
     }
