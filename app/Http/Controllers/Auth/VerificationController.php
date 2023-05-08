@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\VerifiesEmails;
+use Auth;
+use App\Role;
 
 class VerificationController extends Controller
 {
@@ -25,7 +27,16 @@ class VerificationController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    // protected $redirectTo = '/home';
+
+    protected function redirectTo()
+    {
+        if (Auth::check() && Auth::user()->role_id == Role::IS_USER) {
+            return '/home';
+        } elseif (Auth::check() && Auth::user()->role_id == (Role::IS_ADMIN || Role::IS_TECHNICIAN)) {
+            return '/dashboard';
+        }
+    }
 
     /**
      * Create a new controller instance.

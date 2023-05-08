@@ -52,7 +52,7 @@ Route::post('reply', 'Front\HomeController@reply');
 
 
 //Route::view('/admin-dashboard', 'admin.home.index');
-Route::group(['middleware' => ['auth']], function () {
+Route::group(['middleware' => ['auth','verified']], function () {
     Route::get('/home', 'Front\ClientController@home')->name('home');
     Route::get('/change-password', 'Front\ClientController@changePassword')->name('client.change-password');
     Route::post('/update-password', 'Front\ClientController@updatePassword')->name('client.update-password');
@@ -70,9 +70,9 @@ Route::group(['middleware' => ['auth']], function () {
 
 
 //Admin--------------------------------------------------------------------------------------------------
-Auth::routes();
+Auth::routes(['verify' => true]);
 
-Route::group(['middleware' => ['auth']], function () {
+Route::group(['middleware' => ['auth','verified']], function () {
 
     Route::view('/dashboard', 'admin.home.index')->name('dashboard');
     Route::resource('category', 'Admin\CategoryController');
