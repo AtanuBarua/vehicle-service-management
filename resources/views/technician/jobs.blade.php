@@ -3,7 +3,7 @@
 
 <div class="sl-mainpanel">
     <nav class="breadcrumb sl-breadcrumb">
-        <a class="breadcrumb-item" href="{{route('admin.home')}}">Dashboard</a>
+        <a class="breadcrumb-item" href="">Dashboard</a>
         <span class="breadcrumb-item active">Manage Jobs</span>
     </nav>
     
@@ -28,7 +28,6 @@
             @endif
             <div class="table-wrapper">
                 <!-- <div class="sl-page-title d-flex justify-content-end">
-                    <a type="button" href="{{route('add-product')}}" class="btn btn-success">Add Product</a>
                 </div> -->
                 <table id="datatable1" class="table display responsive nowrap">
                     <thead>

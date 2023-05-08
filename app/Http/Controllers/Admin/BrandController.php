@@ -15,9 +15,12 @@ class BrandController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    
     public function index()
     {
-        return view('admin.brands.manage-brand', [
+        $this->authorize('viewAny', Brand::class);
+
+        return view('dashboard.brands.manage-brand', [
             'brands' => Brand::all()
         ]);
     }
@@ -29,7 +32,9 @@ class BrandController extends Controller
      */
     public function create()
     {
-        return view('admin.brands.add-brand');
+        $this->authorize('create', Brand::class);
+
+        return view('dashboard.brands.add-brand');
     }
 
     /**
@@ -40,6 +45,8 @@ class BrandController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', Brand::class);
+
         $request->validate([
             'name' => 'required',
             'image' => 'required|mimes:jpeg,png,jpg,gif|max:2048',
@@ -92,7 +99,9 @@ class BrandController extends Controller
      */
     public function edit(Brand $brand)
     {
-        return view('admin.brands.edit-brand', compact('brand'));
+        $this->authorize('update', $brand);
+
+        return view('dashboard.brands.edit-brand', compact('brand'));
     }
 
     /**
@@ -104,6 +113,8 @@ class BrandController extends Controller
      */
     public function update(Request $request, Brand $brand)
     {
+        $this->authorize('update', $brand);
+
         $request->validate([
             'name' => 'required',
             'status' => 'required'
@@ -149,6 +160,8 @@ class BrandController extends Controller
      */
     public function destroy(Brand $brand)
     {
+        $this->authorize('delete', Brand::class);
+
         $brand->delete();
         return redirect('/brand/')->with('message','Brand deleted successfully!!');
     }
