@@ -32,13 +32,13 @@ class LoginController extends Controller
     // protected $redirectTo = Auth::user()->role_id == 2 ? '/home' : '/dashboard';
 
     protected function redirectTo()
-{
-    if (Auth::check() && Auth::user()->role_id == Role::IS_USER) {
-        return '/home';
-    } elseif(Auth::check() && Auth::user()->role_id == (Role::IS_ADMIN || Role::IS_TECHNICIAN)) {
-        return '/dashboard';
+    {
+        if (Auth::check() && Auth::user()->role_id == Role::IS_USER) {
+            return '/home';
+        } elseif (Auth::check() && Auth::user()->role_id == (Role::IS_ADMIN || Role::IS_TECHNICIAN)) {
+            return '/dashboard';
+        }
     }
-}
 
     /**
      * Create a new controller instance.
@@ -52,7 +52,7 @@ class LoginController extends Controller
         $this->middleware('guest:technician')->except('logout');
     }
 
-     public function showAdminLoginForm()
+    public function showAdminLoginForm()
     {
         return view('auth.login', ['url' => 'admin']);
     }
@@ -67,7 +67,6 @@ class LoginController extends Controller
         if (Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password], $request->get('remember'))) {
 
             return redirect()->intended('/admin-dashboard');
-            
         }
 
         return back()->withInput($request->only('email', 'remember'));
@@ -88,11 +87,8 @@ class LoginController extends Controller
         if (Auth::guard('technician')->attempt(['email' => $request->email, 'password' => $request->password], $request->get('remember'))) {
 
             return redirect()->intended('/technician/dashboard');
-            
-        }
-
-        else{
-            return back()->with('error','Invalid email or password');
+        } else {
+            return back()->with('error', 'Invalid email or password');
         }
 
         //return back()->withInput($request->only('email', 'remember'));
