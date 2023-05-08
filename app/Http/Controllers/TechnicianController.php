@@ -26,6 +26,7 @@ class TechnicianController extends Controller
                     ->orderBy('bookings.id','desc')
                     ->get();
         //$jobs = Booking::where('technician_id',Auth::guard('technician')->id())->get();
+        // return $jobs;
         return view('technician.jobs', compact('jobs'));
     }
 

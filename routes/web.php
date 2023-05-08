@@ -72,29 +72,35 @@ Route::group(['middleware' => ['auth']], function () {
 //Admin--------------------------------------------------------------------------------------------------
 Auth::routes();
 
-Route::group(['middleware' => ['admin']], function () {
+Route::group(['middleware' => ['auth']], function () {
 
-    Route::view('/admin-dashboard', 'admin.home.index')->name('admin.home');
-    
+    Route::view('/dashboard', 'admin.home.index')->name('dashboard');
     Route::resource('category', 'Admin\CategoryController');
     Route::resource('brand', 'Admin\BrandController');
     Route::resource('product', 'Admin\ProductController');
 
-    Route::get('/manage-orders/', 'HomeController@manageOrders')->name('manage-orders');
+    Route::get('/order/manage', 'Admin\OrderController@manageOrders')->name('order.manage');
+    Route::get('/order/process/{order}', 'Admin\OrderController@processOrder')->name('order.process');
+    Route::get('/order/cancel/{order}', 'Admin\OrderController@CancelOrder')->name('order.cancel');
+    Route::get('/order/ship/{order}', 'Admin\OrderController@shippedOrder')->name('order.ship');
+    Route::get('/order/deliver/{order}', 'Admin\OrderController@deliveredOrder')->name('order.deliver');
+    Route::get('/manage/order-details/{id}', 'Admin\OrderController@manageOrderDetails')->name('manage-order-details');
 
-    Route::get('/process-order/{id}', 'HomeController@processOrder')->name('process-order');
-    Route::get('/cancel-order/{id}', 'HomeController@CancelOrder')->name('cancel-order');
-    Route::get('/shipped-order/{id}', 'HomeController@shippedOrder')->name('shipped-order');
-    Route::get('/delivered-order/{id}', 'HomeController@deliveredOrder')->name('delivered-order');
+    Route::get('/technician/manage', 'Admin\TechnicianController@manageTechnicians')->name('technician.manage');
+    Route::post('/technician/create', 'Admin\TechnicianController@createTechnician')->name('technician.create');
+    Route::post('/technician/update-slot', 'Admin\TechnicianController@updateTechnicianSlot')->name('technician.update-slot');
 
-    Route::get('/manage/order-details/{id}', 'HomeController@manageOrderDetails')->name('manage-order-details');
+    Route::resource('service', 'Admin\ServiceController');
 
-    Route::get('/add-service', 'HomeController@addService')->name('add-service');
-    Route::post('/new-service', 'HomeController@newService')->name('new-service');
-    Route::get('/manage-services/', 'HomeController@manageService')->name('manage-services');
-    Route::get('/edit-service/{id}', 'HomeController@editService')->name('edit-service');
-    Route::post('/update-service/', 'HomeController@updateService')->name('update-service');
-    Route::post('/delete-service/', 'HomeController@deleteService')->name('delete-service');
+    Route::get('/booking/manage/', 'Admin\BookingController@manageBooking')->name('booking.manage');
+    Route::get('/booking/confirm{booking}', 'Admin\BookingController@confirmBooking')->name('booking.confirm');
+    Route::get('/booking/cancel{booking}', 'Admin\BookingController@cancelBooking')->name('booking.cancel');
+    Route::get('/booking/process-again/{booking}', 'Admin\BookingController@processAgain')->name('booking.process-again');
+    Route::get('/booking/delivered{booking}', 'Admin\BookingController@deliveredBooking')->name('booking.delivered');
+});
+
+
+Route::group(['middleware' => ['admin']], function () {
 
     Route::get('/add-region', 'HomeController@addRegion')->name('add-region');
     Route::post('/new-region', 'HomeController@newRegion')->name('new-region');
@@ -103,20 +109,9 @@ Route::group(['middleware' => ['admin']], function () {
     Route::post('/new-city', 'HomeController@newCity')->name('new-city');
     Route::get('/manage-city/', 'HomeController@manageCities')->name('manage-city');
 
-
-    Route::get('/manage-bookings/', 'HomeController@manageBooking')->name('manage-bookings');
-    Route::get('/confirm-booking/{id}', 'HomeController@confirmBooking')->name('confirm-booking');
-    Route::get('/cancel-booking/{id}', 'HomeController@cancelBooking')->name('cancel-booking');
-    Route::get('/process-again/{id}', 'HomeController@processAgain')->name('process-again');
-    Route::get('/delivered-booking/{id}', 'HomeController@deliveredBooking')->name('delivered-booking');
-
     //Route::get('/manage-store/','HomeController@manageStore')->name('manage-store'); 
     Route::get('/booking-invoice', 'HomeController@downloadBookingInvoice')->name('booking-invoice-download');
     Route::get('admin-invoice-download/{id}', 'HomeController@downloadInvoice')->name('admin-invoice-download');
-
-    Route::get('/manage-technicians/', 'HomeController@manageTechnicians')->name('manage-technicians');
-
-    Route::post('/update-technician-slot', 'HomeController@updateTechnicianSlot')->name('update-technician-slot');
 
     //manage chatbot
     Route::get('answer/{id}/questions', 'HomeController@questions')->name('questions');
@@ -128,16 +123,17 @@ Route::group(['middleware' => ['admin']], function () {
     Route::post('delete-answer', 'HomeController@deleteAnswer')->name('delete-answer');
 });
 
+
 //Technician------------------------------------------------------------------------------
 Route::get('/login/technician', 'Auth\LoginController@showTechnicianLoginForm')->name('technician-login');
 Route::post('/login/technician', 'Auth\LoginController@technicianLogin');
 Route::get('/register/technician', 'Auth\RegisterController@showTechnicianRegisterForm');
 Route::post('/register/technician', 'Auth\RegisterController@createTechnician');
 
+// Route::get('/dashboard', 'TechnicianController@index')->name('technician.home');
+Route::get('/jobs', 'TechnicianController@jobs')->name('technician.jobs');
 Route::group(['prefix' => 'technician', 'middleware' => ['technician']], function () {
     //Route::view('/dashboard', 'technician.home')->name('technician.home');
-    Route::get('/dashboard', 'TechnicianController@index')->name('technician.home');
-    Route::get('/jobs', 'TechnicianController@jobs')->name('technician.jobs');
     Route::get('/process-booking/{id}', 'TechnicianController@processBooking')->name('process-booking');
     Route::get('/done-booking/{id}', 'TechnicianController@doneBooking')->name('done-booking');
 });

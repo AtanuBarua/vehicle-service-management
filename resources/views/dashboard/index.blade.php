@@ -1,4 +1,4 @@
-@extends('admin.master')
+@extends('dashboard.master')
 @section('body')
 
     <div class="sl-mainpanel">

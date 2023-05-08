@@ -81,9 +81,53 @@
                             </div>
                         </form>
                     </div>
-                </div>
+                </div><br>
+                <table class="table">
+                    <thead>
+                        <tr>
+                          <th scope="col">Type</th>
+                          <th scope="col">Email</th>
+                          <th scope="col">Password</th>
+                          <th scope="col">Action</th>
+                        </tr>
+                      </thead>
+                    <tbody>
+                        @php
+                            $adminEmail = "admin@gmail.com";
+                            $adminPass = "admin@gmail.com";
+
+                            $userEmail = "user@gmail.com";
+                            $userPass = "user@gmail.com";
+                        @endphp
+                      <tr>
+                        <td>Admin</td>
+                        <td>{{$adminEmail}}</td>
+                        <td>{{$adminPass}}</td>
+                        <td><button class="btn btn-success" onclick="set('{{$adminEmail}}','{{$adminPass}}')">Select</button></td>
+                      </tr>
+                      <tr>
+                        <td>User</td>
+                        <td>{{$userEmail}}</td>
+                        <td>{{$userPass}}</td>
+                        <td><button class="btn btn-success" onclick="set('{{$userEmail}}','{{$userPass}}')">Select</button></td>
+                      </tr>
+                      {{-- <tr>
+                        <td>Technician</td>
+                        <td>tech@gmail.com</td>
+                        <td>tech@gmail.com</td>
+                        <td><button class="btn btn-success" onclick="admin()">Select</button></td>
+                      </tr> --}}
+                    </tbody>
+                  </table>
             </div>
         </div>
     </div>
+
+    <script>
+            function set(email,pass){
+                $("#email").val(email);
+                $("#password").val(pass);
+            }     
+    </script>
     @endsection
     
