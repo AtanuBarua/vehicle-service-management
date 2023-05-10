@@ -38,6 +38,10 @@ Route::get('/cart-decrement/{id}', 'Front\HomeController@cartDecrement')->name('
 Route::post('/ajax-get-cities', 'Front\HomeController@getCities')->name('ajax-get-cities');
 Route::post('/ajax-available-times', 'Front\HomeController@availableTimes')->name('ajax-available-times');
 
+Route::get('auth/google', 'Auth\GoogleController@redirectToGoogle')->name('google.login');
+Route::get('auth/google/callback', 'Auth\GoogleController@handleGoogleCallback');
+
+
 Route::get('/login/admin', 'Auth\LoginController@showAdminLoginForm')->name('admin-login');
 Route::post('/login/admin', 'Auth\LoginController@adminLogin');
 // Route::get('/register/admin', 'Auth\RegisterController@showAdminRegisterForm');
