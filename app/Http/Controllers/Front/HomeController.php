@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Front;
 
+use App\Address;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Category;
@@ -9,18 +10,11 @@ use App\Brand;
 use App\Product;
 use App\Order;
 use App\Invoice;
-use App\City;
-use App\Region;
-use App\Review;
-use App\Chat;
-use App\BotQuestion;
-use App\BotAnswer;
-use App\TrainBot;
 use App\Booking;
-use DB;
-use Carbon\Carbon;
+use App\Location;
+use App\Payment;
+use App\User;
 use Cart;
-use Session;
 use Auth;
 use Illuminate\Support\Facades\Cache;
 
@@ -33,9 +27,10 @@ class HomeController extends Controller
         $categories = Category::where('status', 1)->get();
         $brands = Brand::where('status', 1)->get();
 
-        $products = Cache::remember('products', '1200', function () {
-            return Product::where('status', 1)->get();
-        });
+        // $products = Cache::remember('products', '1200', function () {
+        //     return Product::where('status', 1)->get();
+        // });
+        $products = Product::where('status', 1)->get(['id','name','image','regular_price','discount_price','sold','availability','category_id','slug']);
         $newProducts = $products->sortByDesc('id')->take(10);
         $topProducts = $products->sortByDesc('sold')->take(10);
         $popularBodykits = $products->where('category_id', 3)->sortByDesc('sold')->take(10);
@@ -111,7 +106,6 @@ class HomeController extends Controller
             ]);
         }
 
-        //return Cart::count();
         return response()->json(['success' => 'Added to Cart']);
     }
 
@@ -152,7 +146,6 @@ class HomeController extends Controller
 
     public function updateCart(Request $request)
     {
-        //return $request->all();
         Cart::update($request->id, $request->qty);
         return back();
     }
@@ -175,54 +168,61 @@ class HomeController extends Controller
 
     public function checkout()
     {
-        $regions = Region::all();
+        $addresses = Address::whereUserId(Auth::id())->get();
+        $defaultShippingAddress = Address::whereUserId(Auth::id())->whereDefaultShippingAddress(1)->first();
+        $defaultBillingAddress = Address::whereUserId(Auth::id())->whereDefaultBillingAddress(1)->first();
+        // return $addresses;
+        $locations = Location::with('children')->whereNull('parent_id')->get();
         $cartItems = Cart::content();
-        return view('front.home.checkout', compact('cartItems', 'regions'));
+        return view('front.home.checkout', compact('cartItems','locations','addresses','defaultShippingAddress','defaultBillingAddress'));
     }
 
     public function orderSubmit(Request $request)
     {
+        $user = User::with('addresses')->find(Auth::id());
+        $defaultShippingAddress = Address::whereUserId($user->id)->where('default_shipping_address',1)->first();
+        $defaultBillingAddress = Address::whereUserId($user->id)->where('default_billing_address',1)->first();
+
         if ($request->payment == "Card") {
             // code...
             $allData = $request->all();
             //dd ($allData);
             return view('front.client.stripe-payment', compact('allData'));
         }
-        $order = new Order();
-        $order->user_id = Auth::id();
-        $order->amount = Cart::subtotal();
-        $order->payment = $request->payment;
-        $order->region_id = $request->region_id;
-        $order->city_id = $request->city_id;
-        $order->address = $request->address;
-        $order->name = $request->name;
-        $order->email = $request->email;
-        $order->phone = $request->phone;
-        $order->status = 0;
-        $order->save();
+        
+        $payment = Payment::create([
+            // 'order_id' => $order->id,
+            'amount' => Cart::subtotal(),
+            'payment_method' => $request->payment
+        ]);
 
-        $order = Order::latest()->first();
+        $order = Order::create([
+            'user_id' => $user->id,
+            'shipping_address_id' => $defaultShippingAddress->id,
+            'billing_address_id' => $defaultBillingAddress->id,
+            'payment_id' => $payment->id,
+            'status' => 0,
+        ]);
 
         $cartItems = Cart::content();
         foreach ($cartItems as $item) {
             $product = Product::where('name', $item->name)->first();
-            $invoice = new Invoice();
-            $invoice->order_id = $order->id;
-            $invoice->product_id = $product->id;
-            $invoice->user_id = Auth::id();
-            $invoice->price = $item->price;
-            $invoice->quantity = $item->qty;
-            $invoice->subtotal = $item->price * $item->qty;
-            $invoice->status = 0;
-            $invoice->reviewed = 0;
-            $invoice->save();
+          
+            Invoice::create([
+                'order_id' => $order->id,
+                'product_id' => $product->id,
+                'user_id' => Auth::id(),
+                'price' => $item->price,
+                'quantity' => $item->qty,
+                'subtotal' => $item->price * $item->qty,
+                'status' => 0,
+                'reviewed' => 0,
+            ]);
 
-            $product->stock = $product->stock - $item->qty;
-
-            $product->save();
+            $product->update(['stock'=>$product->stock - $item->qty]);
         }
         Cart::destroy();
-        //Session::put('message', 'Order competed successfully!');
+        
         return redirect(route('/'))->with('message', 'Order submitted successfully!');
     }
 
@@ -238,15 +238,6 @@ class HomeController extends Controller
         return redirect()->back();
     }
 
-    public function getCities(Request $request)
-    {
-        $region_id = $request->region_id;
-
-        $cities = City::where('region_id', $region_id)->get();
-        return response()->json([
-            'cities' => $cities
-        ]);
-    }
 
     public function availableTimes(Request $request)
     {
@@ -272,92 +263,4 @@ class HomeController extends Controller
         }
     }
 
-    //chat---------------------------------------------------
-    public function chat()
-    {
-        // code...
-        //$chats = Chat::all(); 
-        Chat::where('created_at', '<', Carbon::now()->subMinutes(20))->delete();
-        return view('front.home.chat');
-    }
-
-    public function sendChat(Request $request)
-    {
-        //return $request->all();
-        $chats = Chat::all();
-
-        $chat = new Chat();
-        $chat->message = $request->message;
-        $chat->user_id = Auth::id();
-        $chat->save();
-
-        $lastChat = Chat::latest()->first();
-
-        $delimiter = ' ';
-        $words = explode($delimiter, $lastChat->message);
-
-        foreach ($words as $word) {
-            $reply = BotQuestion::where('question', 'LIKE', '%' . $word . '%')->first();
-            if ($reply) {
-                // code...
-                break;
-            }
-        }
-
-        // $reply = BotQuestion::where('question','LIKE','%'.$lastChat->message.'%')->first();
-
-        $trainBots = "";
-        $answer = "";
-
-        if ($reply) {
-            // code...
-            $trainBots = TrainBot::where('question_id', $reply->id)->first();
-        }
-
-        if (!$trainBots == "") {
-            // code...
-            $answer = BotAnswer::find($trainBots->answer_id);
-        }
-
-        // if (!$answer == "") {
-        //     // code...
-        //     $chat = new Chat();
-        //     $chat->message = $answer->answer;
-        //     $chat->user_id = Auth::id();
-        //     $chat->reply = 1;
-        //     $chat->save();
-        // }
-        return response()->json(array(
-            'reply' => $answer,
-        ));
-    }
-
-    public function reply(Request $request)
-    {
-        $chat = new Chat();
-
-        if ($request->answer) {
-            $chat->message = $request->answer;
-            $chat->user_id = Auth::id();
-            $chat->reply = 1;
-            $chat->save();
-        } else {
-            $defaultAnswer = BotAnswer::where('defaultAnswer', 1)->first();
-            $chat->message = $defaultAnswer->answer;
-            $chat->user_id = Auth::id();
-            $chat->reply = 1;
-            $chat->save();
-        }
-
-        return response()->json("Reply");
-    }
-
-    public function chats()
-    {
-        //$chats = Chat::orderBy('id','desc')->take(4)->get();
-        $chats = Chat::all()->where('user_id', Auth::id())->take(-10);
-        return response()->json(array(
-            'chats' => $chats,
-        ));
-    }
 }

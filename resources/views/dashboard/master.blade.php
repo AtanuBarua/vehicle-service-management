@@ -42,7 +42,8 @@
 
     <!-- Starlight CSS -->
     <link rel="stylesheet" href="{{asset('/')}}admin/assets/css/starlight.css">
-    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
 <style>
     .msg-summary-big > img:hover {
   width: 300px;

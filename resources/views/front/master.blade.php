@@ -821,8 +821,6 @@
             });
         }
     </script>
-
-
 </body>
 
 </html>

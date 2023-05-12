@@ -1,9 +1,9 @@
-@extends('admin.master')
+@extends('dashboard.master')
 
 @section('body')
 <div class="sl-mainpanel">
     <nav class="breadcrumb sl-breadcrumb">
-        <a class="breadcrumb-item" href="{{route('admin.home')}}">Dashboard</a>
+        <a class="breadcrumb-item" href="{{route('dashboard')}}">Dashboard</a>
         <span class="breadcrumb-item active">Manage Cities</span>
     </nav>
 
@@ -18,29 +18,27 @@
 
             <div class="table-wrapper">
                 <div class="sl-page-title d-flex justify-content-end">
-                    <a type="button" href="{{route('add-region')}}" class="btn btn-success">Add Region</a>
-                    <a type="button" href="{{route('add-city')}}" class="ml-2 btn btn-success">Add City</a>
+                    <a type="button" href="{{route('location.create')}}" class="ml-2 btn btn-success">Add Location</a>
                 </div>
 
                 <table id="datatable1" class="table display responsive nowrap">
                     <thead>
-                    <tr>
-                       
-                        <th>Region</th>
-                        <th>City</th>
-
-                    </tr>
+                        <tr>
+                            <th>Location</th>
+                            <th>Parent</th>
+                            <th>Type</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    @php($i=1)
-                    @foreach($cities as $city)
+                        @php($i=1)
+                        @foreach ($locations as $item)
                         <tr>
-                            <td>{{$city->region_name}}</td>
-                            <td>{{$city->name}}</td>
-                            
-
+                            <td>{{$item->name}}</td>
+                            <td>{{$item->parent->name ?? 'NONE'}}</td>
+                            <td>{{$item->type}}</td>
                         </tr>
-                    @endforeach
+                        @endforeach
+                        
                     </tbody>
                 </table>
             </div><!-- table-wrapper -->
@@ -89,4 +87,3 @@
     });
 </script>
 @endsection
-

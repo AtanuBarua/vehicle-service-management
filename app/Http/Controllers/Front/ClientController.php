@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Front;
 
+use App\Address;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Order;
@@ -9,6 +10,7 @@ use App\Invoice;
 use App\Region;
 use App\Service;
 use App\Booking;
+use App\Location;
 use App\Review;
 use Auth;
 use Carbon\Carbon;
@@ -21,8 +23,11 @@ class ClientController extends Controller
     //
     public function home(){
 
-        $orders =  Order::where('user_id',Auth::id())->latest()->get();
-        return view('front.client.home',compact('orders'));
+        $addresses = Address::whereUserId(Auth::id())->get();
+        $locations = Location::with('children')->whereNull('parent_id')->get();
+        $orders =  Order::with('shippingAddress','billingAddress','payment')->where('user_id',Auth::id())->latest()->get();
+        // return $orders;
+        return view('front.client.home',compact('orders','locations','addresses'));
     }
 
     public function changePassword(){
@@ -79,10 +84,9 @@ class ClientController extends Controller
     public function bookService(){
 
         $date = Carbon::now()->toDateString();
-        //return $date;
         $services = Service::where('status',1)->get();
-        $regions = Region::all();
-        return view('front.client.book-service',compact('services','regions','date'));
+        $locations = Location::with('children')->whereNull('parent_id')->get();
+        return view('front.client.book-service',compact('services','locations','date'));
     }
 
     public function bookingSubmit(Request $request){
@@ -156,6 +160,11 @@ class ClientController extends Controller
         $pdf = PDF::loadView('admin.orders.order-invoice',compact('order','orderItems'))->setPaper('a4');
         return $pdf->download('invoice.pdf');
         //return view('admin.orders.order-invoice',compact('order','orderItems'));
+    }
+
+    public function getLocations($id){
+        $locations = Location::whereParentId($id)->get();
+        return response()->json(['locations'=>$locations]);
     }
 
 
