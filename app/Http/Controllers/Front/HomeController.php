@@ -26,10 +26,7 @@ class HomeController extends Controller
     {
         $categories = Category::where('status', 1)->get();
         $brands = Brand::where('status', 1)->get();
-
-        // $products = Cache::remember('products', '1200', function () {
-        //     return Product::where('status', 1)->get();
-        // });
+        
         $products = Product::where('status', 1)->get(['id','name','image','regular_price','discount_price','sold','availability','category_id','slug']);
         $newProducts = $products->sortByDesc('id')->take(10);
         $topProducts = $products->sortByDesc('sold')->take(10);
@@ -53,7 +50,7 @@ class HomeController extends Controller
 
         $reviews = $product->reviews()->where('status', 1)->get();
 
-        $products = Cache::get('products');
+        $products = Product::where('status', 1)->get(['id','name','image','regular_price','discount_price','sold','availability','category_id','slug']);
 
         $relatedProducts = $products->where('id', '!=', $product->id)->sortByDesc('sold')->take(6);
 
