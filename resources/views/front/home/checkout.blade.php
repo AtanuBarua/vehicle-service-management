@@ -261,26 +261,6 @@
 
                 	<div class="col-lg-6 col-12">
 
-<<<<<<< Updated upstream
-
-                		<div class="checkbox-form">
-                			<h3>Billing Details</h3>
-                			<div class="row">
-
-                				<div class="col-md-12">
-                					<form action="{{route('order-submit')}}" method="post">
-                				@csrf
-                					<div class="checkout-form-list">
-                						<label>Full Name</label>
-                						<input required name="name" placeholder="" type="text" value="{{Auth::user()->name}}">
-                					</div>
-                				</div>
-                				<div class="col-md-6">
-                					<div class="country-select clearfix">
-                						<label>Region <span class="required">*</span></label>
-                						<select id="region" required class="myniceselect nice-select wide" name="region_id">
-                							<option value="" selected disabled>Select Region</option>
-=======
             <div class="col-lg-6 col-12">
 
                 <div class="checkbox-form">
@@ -316,7 +296,6 @@
                                 <label>Region <span class="required">*</span></label>
                                 <select id="region" required class="myniceselect nice-select wide" name="region_id">
                                     <option value="" selected disabled>Select Region</option>
->>>>>>> Stashed changes
                                     @foreach($regions as $region)
                                     <option value="{{ $region->id }}">{{ $region->name }}</option>
                                     @endforeach
@@ -363,9 +342,6 @@
 
                 			</div>
 
-<<<<<<< Updated upstream
-                		</div>
-=======
                                 @foreach($cartItems as $item)
                                 <?php
                                     $qty = $item->qty;
@@ -380,7 +356,6 @@
                                     <td class="cart-product-total"><span class="amount"><strong
                                                 class="product-quantity">{{$item->price}}</span> x {{$item->qty}} =
                                         {{$total}}</strong></td>
->>>>>>> Stashed changes
 
                 	</div>
                 	<div class="col-lg-6 col-12">
@@ -417,22 +392,6 @@
                                             <th>Cart Subtotal</th>
                                             <td><span class="amount">{{Cart::subtotal()}}</span></td>
                                         </tr> -->
-<<<<<<< Updated upstream
-                                        <tr class="order-total">
-                                        	<th>Order Total</th>
-                                        	<td><strong><span class="amount">{{Cart::subtotal()}}</span></strong></td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-                            <div class="payment-method">
-                            	<div class="payment-accordion">
-
-                            		<div class="order-button-payment">
-                            			<input value="Place order" type="submit">
-                            		</div>
-                            	</div>
-=======
                                 <tr class="order-total">
                                     <th>Order Total</th>
                                     <td><strong><span class="amount">{{Cart::subtotal()}}</span></strong></td>
@@ -454,7 +413,6 @@
                         <div class="payment-accordion">
                             <div class="order-button-payment">
                                 <input value="Place order" type="submit">
->>>>>>> Stashed changes
                             </div>
                         </div>
                     </div>
@@ -473,18 +431,9 @@
         $('#region').on('change',function(e) {
             var region_id = e.target.value;
             $.ajax({
-<<<<<<< Updated upstream
-                url:"{{ route('ajax-get-cities') }}",
-                type:"POST",
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    region_id: region_id
-                },
-=======
                 url:`{{ url('get-locations/${region_id}') }}`,
                 type:"GET",
 
->>>>>>> Stashed changes
                 success:function (data) {
                     $('#city').prop("disabled",false);
                     $('#area').prop("disabled",true);
@@ -495,11 +444,6 @@
                 }
             })
         });
-<<<<<<< Updated upstream
-    });
-</script>
-        @endsection
-=======
 
         $('#city').on('change',function(e) {
             var city_id = e.target.value;
@@ -564,4 +508,3 @@
     });
 </script>
 @endsection
->>>>>>> Stashed changes

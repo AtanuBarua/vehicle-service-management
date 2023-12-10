@@ -27,12 +27,4 @@ class Brand extends Model
     public function findBrandBySlug($slug){
         return $this->query()->where('slug',$slug)->first();
     }
-
-    // public function updateBrand($data, $id){
-    //     return $this->where('id',$id)->update($data);
-    // }
-
-    // public function deleteBrand($id){
-    //     return $this->where('id',$id)->delete();
-    // }
 }

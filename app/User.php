@@ -43,8 +43,6 @@ class User extends Authenticatable implements MustVerifyEmail
     public function technician(){
         return $this->hasOne(TechnicianDetails::class);
     }
-<<<<<<< Updated upstream
-=======
 
     public function sendEmailVerificationNotification()
     {
@@ -67,5 +65,4 @@ class User extends Authenticatable implements MustVerifyEmail
         }
         return $query->find(Auth::id());
     }
->>>>>>> Stashed changes
 }

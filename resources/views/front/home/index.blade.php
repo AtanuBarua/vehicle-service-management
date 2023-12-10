@@ -656,25 +656,6 @@
 
 
 
-<<<<<<< Updated upstream
-            </script>
-
-            <script>
-                $( document ).ready(function() {
-                    @if (Session::get('message'))
-                    Swal.fire({
-                        position: 'top-end',
-                        icon: 'success',
-                        title: '{{Session::get('message')}}',
-                        showConfirmButton: false,
-                        timer: 2000
-                    })
-                    @endif
-                });
-            </script>
-
-            @endsection
-=======
     </script>
 
     <script>
@@ -701,4 +682,3 @@
     </script>
 
     @endsection
->>>>>>> Stashed changes

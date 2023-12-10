@@ -6,9 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Invoice extends Model
 {
-<<<<<<< Updated upstream
-    //
-=======
     protected $fillable = ['order_id','product_id','user_id','price','quantity','subtotal','status','reviewed'];
 
     const ACTIVE = 1;
@@ -28,5 +25,4 @@ class Invoice extends Model
     public function createInvoice($data){
         return $this->create($data);
     }
->>>>>>> Stashed changes
 }
