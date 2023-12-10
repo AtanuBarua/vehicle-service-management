@@ -7,6 +7,7 @@ use App\Notifications\VerifyEmailQueued;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\Auth;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -55,5 +56,13 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function addresses(){
         return $this->hasMany(Address::class);
+    }
+
+    public function getAuthUser($with=null){
+        $query = $this->query();
+        if ($with) {
+            $query->with($with);
+        }
+        return $query->find(Auth::id());
     }
 }

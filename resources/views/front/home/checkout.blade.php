@@ -257,7 +257,9 @@
                         </div>
                     </div>
                 </div> -->
-        <div class="row">
+                <div class="row">
+
+                	<div class="col-lg-6 col-12">
 
             <div class="col-lg-6 col-12">
 
@@ -288,7 +290,7 @@
                                         value="{{Auth::user()->name}}">
                                 </div> --}}
                         </div>
-                       
+
                         {{-- <div class="col-md-6">
                             <div class="country-select clearfix">
                                 <label>Region <span class="required">*</span></label>
@@ -338,27 +340,13 @@
                             </div>
                         </div> --}}
 
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-6 col-12">
-                <div class="your-order">
-                    <h3>Your order</h3>
-                    <div class="your-order-table table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th class="cart-product-name">Product</th>
-                                    <th class="cart-product-total">Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                			</div>
 
                                 @foreach($cartItems as $item)
                                 <?php
                                     $qty = $item->qty;
                                     $price = $item->price;
-                                    $total = $qty*$price;	    	
+                                    $total = $qty*$price;
                                 ?>
                                 <tr class="cart_item">
                                     <td class="cart-product-name"> {{$item->name}}
@@ -368,6 +356,32 @@
                                     <td class="cart-product-total"><span class="amount"><strong
                                                 class="product-quantity">{{$item->price}}</span> x {{$item->qty}} =
                                         {{$total}}</strong></td>
+
+                	</div>
+                	<div class="col-lg-6 col-12">
+                		<div class="your-order">
+                			<h3>Your order</h3>
+                			<div class="your-order-table table-responsive">
+                				<table class="table">
+                					<thead>
+                						<tr>
+                							<th class="cart-product-name">Product</th>
+                							<th class="cart-product-total">Total</th>
+                						</tr>
+                					</thead>
+                					<tbody>
+
+                						@foreach($cartItems as $item)
+                						<?php
+
+                						$qty = $item->qty;
+                						$price = $item->price;
+                						$total = $qty*$price;
+                						?>
+                						<tr class="cart_item">
+                                            <td class="cart-product-name"> {{$item->name}}<!-- <strong class="product-quantity">
+                                            	× {{$item->qty}}</strong> --></td>
+                                            	<td class="cart-product-total"><span class="amount"><strong class="product-quantity">{{$item->price}}</span> x {{$item->qty}} = {{$total}}</strong></td>
 
                                 </tr>
                                 @endforeach
@@ -390,8 +404,8 @@
                             <label>Payment through <span class="required">*</span></label>
                             <select required name="payment" class="form-control">
                                 <option value="">Select</option>
-                                <option value="cash_on_delivery">Cash on Delivery</option>
-                                <option value="card">Card</option>
+                                <option value={{App\Payment::TYPE_COD}}>Cash on Delivery</option>
+                                <option value={{App\Payment::TYPE_CARD}}>Card</option>
                             </select>
                         </div>
                     </div>
@@ -402,12 +416,10 @@
                             </div>
                         </div>
                     </div>
+                    </form>
                 </div>
             </div>
-            </form>
         </div>
-    </div>
-</div>
 
 <script type="text/javascript">
     $.ajaxSetup({
@@ -421,15 +433,13 @@
             $.ajax({
                 url:`{{ url('get-locations/${region_id}') }}`,
                 type:"GET",
-              
+
                 success:function (data) {
                     $('#city').prop("disabled",false);
                     $('#area').prop("disabled",true);
                     $('#city').empty();
-                    $('#area').empty();
-                    $('#city').append('<option value="">Select</option>');
-                    $.each(data.locations,function(index,location){
-                        $('#city').append('<option value="'+location.id+'">'+location.name+'</option>');
+                    $.each(data.cities,function(index,city){
+                        $('#city').append('<option value="'+city.id+'">'+city.name+'</option>');
                     })
                 }
             })
@@ -440,7 +450,7 @@
             $.ajax({
                 url:`{{ url('get-locations/${city_id}') }}`,
                 type:"GET",
-              
+
                 success:function (data) {
                     $('#area').prop("disabled",false);
                     $('#area').empty();
@@ -453,8 +463,8 @@
         });
 
         $('.openSecondModalBtn').click(function() {
-            $('#firstModal').modal('hide'); 
-            $('#secondModal').modal('show'); 
+            $('#firstModal').modal('hide');
+            $('#secondModal').modal('show');
             // var address = $("#openSecondModalBtn").data("id");
             var address = $(this).data("id");
             console.log(address);
@@ -468,7 +478,7 @@
                     $("#full_name").val(response.full_name);
                     $("#phone").val(response.phone);
                     $("#address").val(response.address);
-                    
+
                     if(response.default_shipping_address == 1) {
                         $("#default_shipping_address").prop("checked", true);
                     }
@@ -479,22 +489,22 @@
                     $('#updateAddressForm').attr('action', function(i, val) {
                         var urlAddress = val;
                         urlAddress = urlAddress.substring(0, urlAddress.length - 2);
-                        return urlAddress + '/' + response.id; 
+                        return urlAddress + '/' + response.id;
                     });
-                  
+
                     // $("#city option[value='" + response.location_id + "']").prop('selected', true);
                     // $("#area option[value='" + response.location_id + "']").prop('selected', true);
                 }
             });
-            
+
         });
     });
 
-    $("#editOrderBtn").click(function (e) { 
+    $("#editOrderBtn").click(function (e) {
             // alert("hi")
             // $("exampleModal2").modal('show');
         $("exampleModal").modal('hide');
-            
+
     });
 </script>
 @endsection

@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Brand;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\BrandRequest;
 use Image;
 use Illuminate\Support\Str;
+use App\Services\BrandService;
+use Illuminate\Support\Facades\Log;
 
 class BrandController extends Controller
 {
@@ -15,14 +18,19 @@ class BrandController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    
+    protected $brand_service;
+
+    public function __construct(BrandService $brand_service)
+    {
+        $this->brand_service = $brand_service;
+    }
+
     public function index()
     {
         $this->authorize('viewAny', Brand::class);
 
-        return view('dashboard.brands.manage-brand', [
-            'brands' => Brand::all()
-        ]);
+        $brands = $this->brand_service->getBrands();
+        return view('dashboard.brands.manage-brand',compact('brands'));
     }
 
     /**
@@ -33,7 +41,6 @@ class BrandController extends Controller
     public function create()
     {
         $this->authorize('create', Brand::class);
-
         return view('dashboard.brands.add-brand');
     }
 
@@ -43,41 +50,17 @@ class BrandController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(BrandRequest $request)
     {
+        try {
+            $this->brand_service->store($request);
+            return redirect()->route('brand.index')->with('message', 'Brand created successfully!!');
+
+        } catch (\Throwable $th) {
+            Log::error('BRAND_STORE_LOG',['exception'=>$th->getMessage()]);
+            return redirect()->route('brand.index')->with('message', 'Something went wrong!');
+        }
         $this->authorize('create', Brand::class);
-
-        $request->validate([
-            'name' => 'required',
-            'image' => 'required|mimes:jpeg,png,jpg,gif|max:2048',
-            'status' => 'required'
-        ]);
-
-        $brandImage = $request->file('image');
-
-        $rand1 = rand(1000, 9999);
-        $rand2 = rand(1000, 9999);
-
-        $fileType  = $brandImage->getClientOriginalExtension();
-        $imageName = $rand1 . $rand2 . '.' . $fileType;
-        $directory = 'brand-images/';
-        $img       = Image::make($brandImage)->resize(174, 106)->save($directory . $imageName);
-
-        Brand::create([
-            'name' => $request->name,
-            'slug' => Str::slug($request->name),
-            'image' => $directory . $imageName,
-            'status' => $request->status,
-        ]);
-
-        // $brand = new Brand();
-        // $brand->name = $request->name;
-        // $brand->slug = Str::slug($request->name);
-        // $brand->image = $directory . $imageName;
-        // $brand->status = $request->status;
- 
-        return redirect()->route('brand.index')->with('message', 'Brand created successfully!!');
-        // return back()->with('message', 'Brand created successfully!!');
     }
 
     /**
@@ -111,45 +94,17 @@ class BrandController extends Controller
      * @param  \App\Brand  $brand
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Brand $brand)
+    public function update(BrandRequest $request, Brand $brand)
     {
-        $this->authorize('update', $brand);
-
-        $request->validate([
-            'name' => 'required',
-            'status' => 'required'
-        ]);
-
-        $brandImage = $request->file('image');
-
-        //return $categoryImage;
-
-        if ($brandImage) {
-
-            //unlink($category->image);
-            $rand1 = rand(1000, 9999);
-            $rand2 = rand(1000, 9999);
-
-            $fileType  = $brandImage->getClientOriginalExtension();
-            $imageName = $rand1 . $rand2 . '.' . $fileType;
-            $directory = 'brand-images/';
-            $img       = Image::make($brandImage)->resize(600, 600)->save($directory . $imageName);
-
-            $brand->update([
-                'name' => $request->name,
-                'slug' => Str::slug($request->name),
-                'status' => $request->status,
-                'image' => $directory . $imageName,
-            ]);
-        } else {
-            $brand->update([
-                'name' => $request->name,
-                'slug' => Str::slug($request->name),
-                'status' => $request->status,
-            ]);
+        try {
+            $this->authorize('update', $brand);
+            $this->brand_service->update($request,$brand);
+            return redirect('/brand/')->with('message', 'Brand updated successfully!!');
+        } catch (\Throwable $th) {
+            Log::error('BRAND_UPDATE_LOG',['exception'=>$th->getMessage()]);
+            return redirect('/brand/')->with('danger', 'Something went wrong');
         }
 
-        return redirect('/brand/')->with('message', 'Brand updated successfully!!');
     }
 
     /**
@@ -160,9 +115,13 @@ class BrandController extends Controller
      */
     public function destroy(Brand $brand)
     {
-        $this->authorize('delete', Brand::class);
-
-        $brand->delete();
-        return redirect('/brand/')->with('message','Brand deleted successfully!!');
+        // $this->authorize('delete', Brand::class);
+        try {
+            $this->brand_service->delete($brand);
+            return redirect('/brand/')->with('message','Brand deleted successfully!!');
+        } catch (\Throwable $th) {
+            Log::error('BRAND_DELETE_LOG',['exception'=>$th->getMessage()]);
+            return redirect('/brand/')->with('danger', 'Something went wrong');
+        }
     }
 }

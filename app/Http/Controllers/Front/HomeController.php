@@ -13,25 +13,27 @@ use App\Invoice;
 use App\Booking;
 use App\Location;
 use App\Payment;
+use App\Review;
+use App\Services\OrderProcessingService;
 use App\User;
 use Cart;
 use Auth;
 use Illuminate\Support\Facades\Cache;
+use DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 
 class HomeController extends Controller
 {
-    //
-
     public function index()
     {
-        $categories = Category::where('status', 1)->get();
-        $brands = Brand::where('status', 1)->get();
-        
-        $products = Product::where('status', 1)->get(['id','name','image','regular_price','discount_price','sold','availability','category_id','slug']);
-        $newProducts = $products->sortByDesc('id')->take(10);
-        $topProducts = $products->sortByDesc('sold')->take(10);
-        $popularBodykits = $products->where('category_id', 3)->sortByDesc('sold')->take(10);
-
+        // Cart::destroy();
+        $categories = (new Category())->getAllActiveCategories();
+        $brands = (new Brand())->getAllActiveBrands();
+        $products = new Product();
+        $newProducts = $products->newProducts(['status'=> Product::ACTIVE,'take'=>10]);
+        $topProducts = $products->topProducts(['take'=>10]);
+        $popularBodykits = $products->getProductsByCategoryId(3,'sold',10);
         return view('front.home.index', compact('categories', 'brands', 'newProducts', 'topProducts', 'popularBodykits'));
     }
 
@@ -44,66 +46,66 @@ class HomeController extends Controller
 
     public function singleProduct($slug)
     {
-        $product = Product::with('brand')->where('slug', $slug)->first();
-
-        $reviewer = Invoice::where('user_id', Auth::id())->where('product_id', $product->id)->where('reviewed', 0)->where('status', 1)->latest()->first();
-
-        $reviews = $product->reviews()->where('status', 1)->get();
-
-        $products = Product::where('status', 1)->get(['id','name','image','regular_price','discount_price','sold','availability','category_id','slug']);
-
-        $relatedProducts = $products->where('id', '!=', $product->id)->sortByDesc('sold')->take(6);
+        $products = new Product();
+        $product = $products->getSingleProductBySlug($slug, 'brand');
+        $reviewer = (new Invoice())->getReviewer(Auth::id(),$product->id);
+        $reviews = (new Review())->getReviewsByProductId($product->id);
+        $relatedProducts = $products->getRelatedProducts($product->id,'sold',10);
 
         return view('front.home.single-product', compact('product', 'reviewer', 'reviews', 'relatedProducts'));
-        // return view('front.home.single-product', compact('product'));
     }
 
     public function categoryProducts($slug)
     {
-        $category = Category::where('slug', $slug)->firstOrFail();
+        $category = (new Category())->findCategoryBySlug($slug);
 
-        $products = Product::where('category_id', $category->id)->where('status', 1)->latest('sold')->paginate(12);
-
+        $search['category_id'] = $category->id;
+        $search['paginate'] = true;
+        $search['paginate_number'] = 12;
+        $search['order_by'] = 'sold';
+        $search['status'] = Product::ACTIVE;
+        $products = (new Product())->getAllProducts($search);
         return view('front.home.category-products', compact('products'));
     }
 
     public function brandProducts($slug)
     {
-        $brand = Brand::where('slug', $slug)->firstOrFail();
+        $brand = (new Brand())->findBrandBySlug($slug);
 
-        $products = Product::where('brand_id', $brand->id)->where('status', 1)->latest('sold')->paginate(12);
+        $search['brand_id'] = $brand->id;
+        $search['paginate'] = true;
+        $search['paginate_number'] = 12;
+        $search['order_by'] = 'sold';
+        $search['status'] = Product::ACTIVE;
+
+        $products = (new Product())->getAllProducts($search);
         return view('front.home.brand-products', compact('products'));
     }
 
     public function addToCart(Request $request)
     {
-        $product = Product::find($request->id);
+        $product = (new Product())->getSingleProductById($request->id);
+        $arr = [
+            'id' => $product->id,
+            'name' => $product->name,
+            'qty' => $request->qty,
+            'weight' => 550,
+            'options' =>
+            ['image' => $product->image, 'slug' => $product->slug]
+        ];
 
-        if ($product->discount_price != null) {
-            Cart::add([
-                'id' => $product->id,
-                'name' => $product->name,
-                'qty' => $request->qty,
-                'price' => $product->discount_price,
-                'weight' => 550,
-                'options' =>
-                ['image' => $product->image, 'slug' => $product->slug]
-            ]);
-        } else {
-            Cart::add([
-                'id' => $product->id,
-                'name' => $product->name,
-                'slug' => $product->slug,
-                'qty' => $request->qty,
-                'price' => $product->regular_price,
-                'weight' => 550,
-                'options' =>
-                ['image' => $product->image],
-                ['slug' => $product->slug],
-            ]);
+        try {
+            if ($product->discount_price != null) {
+                $arr['price'] = $product->discount_price;
+                Cart::add($arr);
+            } else {
+                $arr['price'] = $product->regular_price;
+                Cart::add($arr);
+            }
+            return response()->json(['success' => 'Added to Cart'], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => 'An error occurred while adding to cart.'], 500);
         }
-
-        return response()->json(['success' => 'Added to Cart']);
     }
 
     public function miniCart()
@@ -116,7 +118,6 @@ class HomeController extends Controller
             'cartItems' => $cartItems,
             'cartQty' => $cartQty,
             'cartTotal' => $cartTotal,
-
         ));
     }
 
@@ -130,45 +131,59 @@ class HomeController extends Controller
             'cartItems' => $cartItems,
             'cartQty' => $cartQty,
             'cartTotal' => $cartTotal,
-
         ));
     }
 
     public function cart()
     {
         $cartItems = Cart::content();
-        //return $cartItems;
         return view('front.home.cart', compact('cartItems'));
     }
 
     public function updateCart(Request $request)
     {
-        Cart::update($request->id, $request->qty);
-        return back();
+        try {
+            Cart::update($request->id, $request->qty);
+            return back();
+        } catch (\Throwable $th) {
+            Log::error($th->getMessage());
+            return back()->with(['error'=>'Something went wrong!']);
+        }
+
     }
 
     public function cartIncrement($rowId)
     {
-        $row = Cart::get($rowId);
-        Cart::update($rowId, $row->qty + 1);
+        try {
+            $row = Cart::get($rowId);
+            Cart::update($rowId, $row->qty + 1);
+            return response()->json(['success'=>'incremented'],200);
+        } catch (\Throwable $th) {
+            Log::error($th->getMessage());
+            return response()->json(['error'=>'Something went wrong!'],500);
+        }
 
-        return response()->json('increment');
     }
 
     public function cartDecrement($rowId)
     {
-        $row = Cart::get($rowId);
-        Cart::update($rowId, $row->qty - 1);
+        try {
+            $row = Cart::get($rowId);
+            Cart::update($rowId, $row->qty - 1);
+            return response()->json(['success'=>'decremented'],200);
+        } catch (\Throwable $th) {
+            Log::error($th->getMessage());
+            return response()->json(['error'=>'Something went wrong!'],500);
+        }
 
-        return response()->json('decrement');
     }
 
     public function checkout()
     {
-        $addresses = Address::whereUserId(Auth::id())->get();
-        $defaultShippingAddress = Address::whereUserId(Auth::id())->whereDefaultShippingAddress(1)->first();
-        $defaultBillingAddress = Address::whereUserId(Auth::id())->whereDefaultBillingAddress(1)->first();
-        // return $addresses;
+        $address = new Address();
+        $addresses = $address->getAddressesOfAuthUser();
+        $defaultShippingAddress = $address->getDefaultShippingAddress();
+        $defaultBillingAddress = $address->getDefaultBillingAddress();
         $locations = Location::with('children')->whereNull('parent_id')->get();
         $cartItems = Cart::content();
         return view('front.home.checkout', compact('cartItems','locations','addresses','defaultShippingAddress','defaultBillingAddress'));
@@ -176,74 +191,64 @@ class HomeController extends Controller
 
     public function orderSubmit(Request $request)
     {
-        $user = User::with('addresses')->find(Auth::id());
-        $defaultShippingAddress = Address::whereUserId($user->id)->where('default_shipping_address',1)->first();
-        $defaultBillingAddress = Address::whereUserId($user->id)->where('default_billing_address',1)->first();
+        try {
+            $address = new Address();
+            $user = (new User())->getAuthUser('addresses');
+            $defaultShippingAddress = $address->getDefaultShippingAddress();
+            $defaultBillingAddress = $address->getDefaultBillingAddress();
+            $request['shipping_address_id'] = $defaultShippingAddress->id;
+            $request['billing_address_id'] = $defaultBillingAddress->id;
 
-        if ($request->payment == "Card") {
-            // code...
-            $allData = $request->all();
-            //dd ($allData);
-            return view('front.client.stripe-payment', compact('allData'));
+            if ($request->payment == Payment::TYPE_CARD) {
+                $allData = $request->all();
+                $allData['shipping_address_id'] = $defaultShippingAddress->id;
+                $allData['billing_address_id'] = $defaultBillingAddress->id;
+                Session::put('allData',$allData);
+                return redirect()->route('card-payment');
+            }
+
+            $order_processing_service = new OrderProcessingService();
+
+            list($code, $message) = $order_processing_service->processOrder($request,$user);
+
+            if ($code == 200) {
+                return redirect('/')->with('message', $message);
+            } else{
+                return redirect('/')->with('error', $message);
+            }
+        } catch (\Throwable $th) {
+            Log::error($th->getMessage());
+            return redirect(route('/'))->with('error', 'Something went wrong! Please try again.');
         }
-        
-        $payment = Payment::create([
-            // 'order_id' => $order->id,
-            'amount' => Cart::subtotal(),
-            'payment_method' => $request->payment
-        ]);
-
-        $order = Order::create([
-            'user_id' => $user->id,
-            'shipping_address_id' => $defaultShippingAddress->id,
-            'billing_address_id' => $defaultBillingAddress->id,
-            'payment_id' => $payment->id,
-            'status' => 0,
-        ]);
-
-        $cartItems = Cart::content();
-        foreach ($cartItems as $item) {
-            $product = Product::where('name', $item->name)->first();
-          
-            Invoice::create([
-                'order_id' => $order->id,
-                'product_id' => $product->id,
-                'user_id' => Auth::id(),
-                'price' => $item->price,
-                'quantity' => $item->qty,
-                'subtotal' => $item->price * $item->qty,
-                'status' => 0,
-                'reviewed' => 0,
-            ]);
-
-            $product->update(['stock'=>$product->stock - $item->qty]);
-        }
-        Cart::destroy();
-        
-        return redirect(route('/'))->with('message', 'Order submitted successfully!');
     }
 
     public function minicartItemRemove($id)
     {
-        Cart::remove($id);
-        return response()->json(['success' => 'Removed from Cart']);
+        try {
+            Cart::remove($id);
+            return response()->json(['success' => 'Removed from Cart'], 200);
+        } catch (\Throwable $th) {
+            //throw $th;
+            Log::error($th->getMessage());
+            return response()->json(['error' => 'An error occured while removing item from cart'], 500);
+        }
     }
 
     public function cartItemRemove($id)
     {
-        Cart::remove($id);
-        return redirect()->back();
+        try {
+            Cart::remove($id);
+            return redirect()->back();
+        } catch (\Throwable $th) {
+            Log::error($th->getMessage());
+            return redirect()->back()->with('error', 'An error occurred while removing from the cart.',500);
+        }
     }
-
 
     public function availableTimes(Request $request)
     {
         $booking1 = count(Booking::where('date', $request->date)->where('time', '10am - 2pm')->get());
         $booking2 = count(Booking::where('date', $request->date)->where('time', '2pm - 6pm')->get());
-
-        // $available1 = "";
-        // $available2 = "";
-        // $available3 = "";
 
         if ($booking1 < 5 && $booking2 < 5) {
             return response()->json([
@@ -259,5 +264,4 @@ class HomeController extends Controller
             ]);
         }
     }
-
 }

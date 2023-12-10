@@ -653,23 +653,32 @@
                         'X-CSRF-TOKEN':$('meta[name="csrf-token"]').attr('content')
                     }
                 });
-                
-                
-                
+
+
+
     </script>
 
     <script>
         $( document ).ready(function() {
-                    @if (Session::get('message'))
-                    Swal.fire({
-                        position: 'top-end',
-                        icon: 'success',
-                        title: '{{Session::get('message')}}',
-                        showConfirmButton: false,
-                        timer: 2000
-                    })
-                    @endif
-                });
+            @if (Session::get('message'))
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: '{{Session::get('message')}}',
+                showConfirmButton: false,
+                timer: 2000
+            })
+            @endif
+            @if (Session::get('error'))
+            Swal.fire({
+                position: 'top-end',
+                icon: 'error',
+                title: '{{Session::get('error')}}',
+                showConfirmButton: false,
+                timer: 3000
+            })
+            @endif
+        });
     </script>
 
     @endsection

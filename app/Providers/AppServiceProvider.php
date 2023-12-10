@@ -30,7 +30,7 @@ class AppServiceProvider extends ServiceProvider
         //
         View::composer('front.master', function ($view){
             $view->with('cartItems', Cart::content());
-            $view->with('categories', Category::where('status',1)->get());
+            $view->with('categories', (new Category())->getAllActiveCategories());
         });
 
         // View::composer(['front.master','front.home.index'], function ($view){

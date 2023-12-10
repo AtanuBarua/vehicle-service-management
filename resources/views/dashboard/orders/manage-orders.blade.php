@@ -29,34 +29,33 @@
                         <!-- <th>Email</th> -->
                         <th>Phone</th>
                         <th>Amount</th>
-                        <th>Payment</th>
+                        {{-- <th>Payment</th> --}}
                         <th>Address</th>
                         <th>Status</th>
                         <th>Details</th>
                         <th>Action</th>
-
                     </tr>
                     </thead>
                     <tbody>
                     @php($i=1)
                     @foreach($orders as $order)
                         <tr>
-                            <td>{{$order->name}}</td>
-                            <!-- <td>{{$order->email}}</td> -->
-                            <td>{{$order->phone}}</td>
+                            <td>{{$order->user->name}}</td>
+                            <!-- <td>{{$order->user->email}}</td> -->
+                            <td>{{$order->user->phone ?? '-'}}</td>
                             <td>{{$order->amount}}</td>
-                            <td>{{$order->payment}}</td>
+                            {{-- <td>{{$order->payment}}</td> --}}
                             <td>{{substr($order->address,0,20)}}</td>
                             <td>
-                                @if($order->status==0)
+                                @if($order->status==\app\Order::ORDER_PENDING)
                                 Pending
-                                @elseif($order->status==1)
+                                @elseif($order->status==\app\Order::ORDER_PROCESSING)
                                 Processing
-                                @elseif($order->status==2)
+                                @elseif($order->status==\app\Order::ORDER_SHIPPED)
                                 Shipped
-                                @elseif($order->status==3)
+                                @elseif($order->status==\app\Order::ORDER_DELIVERED)
                                 Delivered
-                                @elseif($order->status==4)
+                                @elseif($order->status==\app\Order::ORDER_CANCELLED)
                                 Cancelled
                                 @endif
                             </td>
@@ -82,9 +81,7 @@
             </div><!-- table-wrapper -->
         </div><!-- card -->
 
-
         <!-- card -->
-
 
     </div><!-- sl-pagebody -->
     @include('admin.include.footer')
