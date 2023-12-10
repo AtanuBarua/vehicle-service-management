@@ -3,7 +3,7 @@
 
 @section('body')
 <div class="sl-mainpanel">
-    
+
     @include('dashboard.include.breadcrumb')
 
     <div class="sl-pagebody">
@@ -29,7 +29,7 @@
                                 @enderror
                                 <select name="category_id" class="form-control">
                                     <option value="">Select</option>
-                                    @foreach($categories as $category)
+                                    @foreach($data['categories'] as $category)
                                     <option value="{{ $category->id }}">{{ $category->name }}</option>
                                     @endforeach
                                 </select>
@@ -44,7 +44,7 @@
                                 @enderror
                                 <select name="brand_id" class="form-control">
                                     <option value="">Select</option>
-                                    @foreach($brands as $brand)
+                                    @foreach($data['brands'] as $brand)
                                     <option value="{{ $brand->id }}">{{ $brand->name }}</option>
                                     @endforeach
                                 </select>

@@ -13,7 +13,12 @@ class OrderController extends Controller
     public function manageOrders(){
         $this->authorize('viewAny', Order::class);
 
-        $orders = Order::latest()->get();
+        // $orders = Order::latest()->get();
+        $search['paginate'] = 10;
+        $select = ['*'];
+        $with = ['user','payment'];
+        $orders = (new Order())->getOrders($with,$search,$select,'id',false);
+        // dd($orders);
         return view('dashboard.orders.manage-orders',compact('orders'));
     }
     

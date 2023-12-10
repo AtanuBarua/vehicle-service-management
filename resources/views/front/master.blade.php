@@ -616,6 +616,7 @@
     <script src="{{ asset('/') }}assets/front/js/main.js"></script>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    @stack('scripts')
     <script type="text/javascript">
         $.ajaxSetup({
             headers: {
