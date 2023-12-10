@@ -17,43 +17,5 @@ class Order extends Model
     public function user(){
         return $this->belongsTo(User::class);
     }
-<<<<<<< Updated upstream
-    
-=======
 
-    public function invoices(){
-        return $this->hasMany(Invoice::class);
-    }
-
-    public function payment(){
-        return $this->hasOne(Payment::class,'id','payment_id');
-    }
-
-    public function shippingAddress(){
-        return $this->hasOne(Address::class,'id','shipping_address_id');
-    }
-
-    public function billingAddress(){
-        return $this->hasOne(Address::class,'id','billing_address_id');
-    }
-
-    public function createOrder($data){
-       return $this->query()->create($data); 
-    }
-
-    public function getOrders($with=[],$search=[], $select = '*', $latest = 'id', $paginate=false){
-        $query = $this->query();
-        if (!empty($with)) {
-            $query->with($with);
-        }
-        $query->select($select);
-        if ($paginate) {
-            $result = $query->latest($latest)->paginate($search['paginate']);
-        }
-        else{
-            $result = $query->latest($latest)->get();
-        }
-        return $result;
-    }    
->>>>>>> Stashed changes
 }
