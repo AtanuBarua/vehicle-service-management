@@ -6,8 +6,7 @@
 
     <title>Uren - Car Accessories Shop</title>
 
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
@@ -59,11 +58,11 @@
                         <div class="row display-tr">
                             <h2>Make Payment</h2>
                             @if (Session::has('dashboard'))
-                            <a href="{{route('buyer-dashboard')}}">
-                                <h3 class="panel-title display-td">Go back to Dashboard</h3>
-                            </a>
+                                <a href="{{ route('buyer-dashboard') }}">
+                                    <h3 class="panel-title display-td">Go back to Dashboard</h3>
+                                </a>
 
-                            <!-- <div class="display-td" >
+                                <!-- <div class="display-td" >
 
                             <img class="img-responsive pull-right" src="http://i76.imgup.net/accepted_c22e0.png">
 
@@ -77,20 +76,18 @@
                     <div class="panel-body">
 
                         @if (Session::has('success'))
+                            <div class="alert alert-success text-center">
 
-                        <div class="alert alert-success text-center">
-
-                            <!--                             <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
+                                <!--                             <a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>
  -->
-                            <p>{{ Session::get('success') }}</p>
+                                <p>{{ Session::get('success') }}</p>
 
-                        </div>
-
+                            </div>
                         @endif
 
                         <form role="form" action="{{ route('card-payment.post') }}" method="post"
                             class="require-validation" data-cc-on-file="false"
-                            data-stripe-publishable-key="{{ env('STRIPE_KEY') }}" id="payment-form">
+                            data-stripe-publishable-key="{{ config('constants.STRIPE_KEY') }}" id="payment-form">
 
                             @csrf
 
@@ -114,7 +111,8 @@
                                 <div class='col-xs-12 form-group card required'>
 
                                     <label class='control-label'>Card Number</label> <input name="card_number"
-                                        autocomplete='off' class='form-control card-number' size='20' type='number'>
+                                        autocomplete='off' class='form-control card-number' size='20'
+                                        type='number'>
 
                                 </div>
 
@@ -127,21 +125,24 @@
                                 <div class='col-xs-12 col-md-4 form-group cvc required'>
 
                                     <label class='control-label'>CVC</label> <input autocomplete='off' name="cvc"
-                                        class='form-control card-cvc' placeholder='ex. 311' size='4' type='number'>
+                                        class='form-control card-cvc' placeholder='ex. 311' size='4'
+                                        type='number'>
 
                                 </div>
 
                                 <div class='col-xs-12 col-md-4 form-group expiration required'>
 
                                     <label class='control-label'>Expiration Month</label> <input name="expiration_month"
-                                        class='form-control card-expiry-month' placeholder='MM' size='2' type='number'>
+                                        class='form-control card-expiry-month' placeholder='MM' size='2'
+                                        type='number'>
 
                                 </div>
 
                                 <div class='col-xs-12 col-md-4 form-group expiration required'>
 
                                     <label class='control-label'>Expiration Year</label> <input name="expiration_year"
-                                        class='form-control card-expiry-year' placeholder='YYYY' size='4' type='number'>
+                                        class='form-control card-expiry-year' placeholder='YYYY' size='4'
+                                        type='number'>
 
                                 </div>
 
@@ -164,17 +165,19 @@
 
                                 <div class="col-xs-12">
 
-                                    <button class="btn btn-primary btn-lg btn-block" type="submit">Pay Now
-                                        ({{Cart::subtotal()}} BDT)</button>
+                                    <button id="submit_btn" class="btn btn-primary btn-lg btn-block" type="submit">Pay Now
+                                        ({{ Cart::subtotal() }} BDT)</button>
 
                                 </div>
 
                             </div>
 
-                            <input type="hidden" name="amount" value="{{Cart::subtotal()}}">
-                            <input type="hidden" name="payment" value="{{$allData['payment']}}">
-                            <input type="hidden" name="shipping_address_id" value="{{$allData['shipping_address_id']}}">
-                            <input type="hidden" name="billing_address_id" value="{{$allData['billing_address_id']}}">
+                            <input type="hidden" name="amount" value="{{ Cart::subtotal() }}">
+                            <input type="hidden" name="payment" value="{{ $allData['payment'] }}">
+                            <input type="hidden" name="shipping_address_id"
+                                value="{{ $allData['shipping_address_id'] }}">
+                            <input type="hidden" name="billing_address_id"
+                                value="{{ $allData['billing_address_id'] }}">
                         </form>
                     </div>
                 </div>
@@ -190,109 +193,112 @@
 
 <script>
     @if (session('alert'))
-    swal("{{ session('alert') }}");
-@endif
+        swal("{{ session('alert') }}");
+    @endif
 </script>
 
 <script type="text/javascript">
     $(function() {
 
-    var $form = $(".require-validation");
+        var $form = $(".require-validation");
 
-  $('form.require-validation').bind('submit', function(e) {
-
-    var $form = $(".require-validation"),
-
-        inputSelector = ['input[type=email]', 'input[type=password]',
-
-                         'input[type=text]', 'input[type=file]',
-
-                         'textarea'].join(', '),
-
-        $inputs       = $form.find('.required').find(inputSelector),
-
-        $errorMessage = $form.find('div.error'),
-
-        valid         = true;
-
-        $errorMessage.addClass('hide');
+        $('form.require-validation').bind('submit', function(e) {
 
 
+            var $form = $(".require-validation"),
 
-        $('.has-error').removeClass('has-error');
+                inputSelector = ['input[type=email]', 'input[type=password]',
 
-    $inputs.each(function(i, el) {
+                    'input[type=text]', 'input[type=file]',
 
-      var $input = $(el);
+                    'textarea'
+                ].join(', '),
 
-      if ($input.val() === '') {
+                $inputs = $form.find('.required').find(inputSelector),
 
-        $input.parent().addClass('has-error');
+                $errorMessage = $form.find('div.error'),
 
-        $errorMessage.removeClass('hide');
+                valid = true;
 
-        e.preventDefault();
-
-      }
-
-    });
+            $errorMessage.addClass('hide');
 
 
 
-    if (!$form.data('cc-on-file')) {
+            $('.has-error').removeClass('has-error');
 
-      e.preventDefault();
+            $inputs.each(function(i, el) {
 
-      Stripe.setPublishableKey($form.data('stripe-publishable-key'));
+                var $input = $(el);
 
-      Stripe.createToken({
+                if ($input.val() === '') {
 
-        number: $('.card-number').val(),
+                    $input.parent().addClass('has-error');
 
-        cvc: $('.card-cvc').val(),
+                    $errorMessage.removeClass('hide');
 
-        exp_month: $('.card-expiry-month').val(),
+                    e.preventDefault();
 
-        exp_year: $('.card-expiry-year').val()
+                }
 
-      }, stripeResponseHandler);
-
-    }
-
-  });
+            });
 
 
 
-  function stripeResponseHandler(status, response) {
+            if (!$form.data('cc-on-file')) {
 
-        if (response.error) {
+                e.preventDefault();
 
-            $('.error')
+                Stripe.setPublishableKey($form.data('stripe-publishable-key'));
 
-                .removeClass('hide')
+                Stripe.createToken({
 
-                .find('.alert')
+                    number: $('.card-number').val(),
 
-                .text(response.error.message);
+                    cvc: $('.card-cvc').val(),
 
-        } else {
+                    exp_month: $('.card-expiry-month').val(),
 
-            var token = response['id'];
+                    exp_year: $('.card-expiry-year').val()
 
-            $form.find('input[type=text]').empty();
+                }, stripeResponseHandler);
 
-            $form.append("<input type='hidden' name='stripeToken' value='" + token + "'/>");
+            }
 
-            $form.get(0).submit();
+        });
+
+
+
+        function stripeResponseHandler(status, response) {
+
+            if (response.error) {
+
+                $('.error')
+
+                    .removeClass('hide')
+
+                    .find('.alert')
+
+                    .text(response.error.message);
+
+            } else {
+
+                $("#submit_btn").prop('disabled',true);
+
+                var token = response['id'];
+
+                $form.find('input[type=text]').empty();
+
+                $form.append("<input type='hidden' name='stripeToken' value='" + token + "'/>");
+
+                $form.get(0).submit();
+
+            }
 
         }
 
-    }
 
 
-
-});
-
+    });
 </script>
 
 </html>

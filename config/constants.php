@@ -1,0 +1,10 @@
+<?php
+
+return [
+    'STRIPE_KEY' => env('STRIPE_KEY',''),
+    'STRIPE_SECRET' => env('STRIPE_SECRET',''),
+    'BULK_SMSBD_USERNAME' => env('BULK_SMSBD_USERNAME',''),
+    'BULK_SMSBD_PASSWORD' => env('BULK_SMSBD_PASSWORD',''),
+    'GOOGLE_CLIENT_ID' => env('GOOGLE_CLIENT_ID',''),
+    'GOOGLE_CLIENT_SECRET' => env('GOOGLE_CLIENT_SECRET',''),
+];

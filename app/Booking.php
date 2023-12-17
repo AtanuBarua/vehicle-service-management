@@ -12,6 +12,8 @@ class Booking extends Model
     public const PROCESSING = 2;
     public const DELIVERED = 4;
     public const CANCELLED = 5;
+    public const IS_REMINDED_TRUE = "1";
+    public const IS_REMINDED_FALSE = "0";
 
     public function user(){
         return $this->belongsTo(User::class);
@@ -32,4 +34,9 @@ class Booking extends Model
     public function city(){
         return $this->belongsTo(City::class);
     }
+
+    public function saveBooking($data, $id){
+        return $this->where('id',$id)->update($data);
+    }
+
 }

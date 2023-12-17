@@ -8,6 +8,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -64,5 +65,14 @@ class User extends Authenticatable implements MustVerifyEmail
             $query->with($with);
         }
         return $query->find(Auth::id());
+    }
+
+    public function changePassword($user, $password){
+        $user->password = Hash::make($password);
+        return $user->save();
+    }
+
+    public function updateProfile($data, $id){
+        return $this->where('id', $id)->update($data);
     }
 }
