@@ -7,7 +7,7 @@ use Auth;
 
 class Order extends Model
 {
-    protected $fillable = ['user_id', 'shipping_address_id', 'billing_address_id', 'payment_id', 'status'];
+    protected $fillable = ['user_id', 'shipping_address_id', 'billing_address_id', 'payment_id', 'status', 'shipping_address', 'billing_address'];
 
     const ORDER_PENDING = 0;
     const ORDER_PROCESSING = 1;

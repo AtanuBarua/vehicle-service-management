@@ -135,7 +135,7 @@
                     {{-- <h5 class="modal-title">Second Modal</h5> --}}
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
-                <form id="updateAddressForm" action="{{ route('address.update', ['id' => 0]) }}" method="POST">
+                <form id="updateAddressForm" action="" method="POST">
                     @method('PUT')
                     @csrf
                     <div class="modal-body">

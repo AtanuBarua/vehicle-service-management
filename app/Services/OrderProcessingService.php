@@ -7,6 +7,7 @@ use App\Product;
 use App\Invoice;
 use App\Order;
 use App\Payment;
+use App\Providers\OrderEvent;
 use Auth;
 use DB;
 use Illuminate\Support\Facades\Log;
@@ -22,10 +23,12 @@ class OrderProcessingService
             DB::beginTransaction();
             $payment = $this->storePayments($request);
             $order = $this->storeOrders($user->id, $request['shipping_address_id'], $request['billing_address_id'], $payment->id);
+            $order = Order::with('user')->find($order->id);
             $this->storeInvoice($order->id);
             $this->status_code = 200;
             $this->status_message = "Order submitted successfully!";
             DB::commit();
+            OrderEvent::dispatch($order);
             return [$this->status_code, $this->status_message];
         } catch (\Throwable $th) {
             //throw $th;
@@ -51,6 +54,9 @@ class OrderProcessingService
         $orderData['billing_address_id'] = $billing_address_id;
         $orderData['payment_id'] = $payment_id;
         $orderData['status'] = Order::ORDER_PENDING;
+        $orderData['shipping_address'] = (new AddressService())->getEncodedAddress($shipping_address_id);
+        $orderData['billing_address'] = (new AddressService())->getEncodedAddress($billing_address_id);
+
         return (new Order())->createOrder($orderData);
     }
 

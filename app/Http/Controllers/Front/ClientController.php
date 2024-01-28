@@ -12,6 +12,8 @@ use App\Service;
 use App\Booking;
 use App\Location;
 use App\Review;
+use App\Services\AddressService;
+use App\Services\OrderProcessingService;
 use App\User;
 use Auth;
 use Carbon\Carbon;
@@ -151,29 +153,21 @@ class ClientController extends Controller
 
     public function downloadInvoice($id)
     {
-        // $order = Order::with('division','district','state','user')->where('id',$order_id)->where('user_id',Auth::id())->first();
-        $order = DB::table('orders')
-            ->join('regions', 'orders.region_id', '=', 'regions.id')
-            ->join('cities', 'orders.city_id', '=', 'cities.id')
-            ->where('orders.id', $id)
-            ->select('orders.*', 'regions.name as region_name', 'cities.name as city_name')
-            ->first();
+        $data['order'] = Order::with('payment', 'user')->find($id);
 
-        $orderItems = DB::table('invoices')
+        $data['orderItems'] = DB::table('invoices')
             ->join('products', 'invoices.product_id', '=', 'products.id')
             ->where('invoices.order_id', $id)
             ->select('invoices.*', 'products.name', 'products.image')
             ->get();
 
-        //dd ($orderItems);
+        $data['shippingAddress'] = (new AddressService())->decodeAddress($data['order']->shipping_address);
+        $data['billingAddress'] = (new AddressService())->decodeAddress($data['order']->billing_address);
 
-        //$orderItems = Invoice::where('order_id',$id)->orderBy('id','DESC')->get();
-        //return view('admin.orders.order-invoice',compact('order','orderItems'));
+        // return view('dashboard.orders.order-invoice',$data);
+        $pdf = PDF::loadView('dashboard.orders.order-invoice', $data)->setPaper('a4');
 
-        // return view('frontend.user.order.order_invoice',compact('order','orderItem'));
-        $pdf = PDF::loadView('admin.orders.order-invoice', compact('order', 'orderItems'))->setPaper('a4');
         return $pdf->download('invoice.pdf');
-        //return view('admin.orders.order-invoice',compact('order','orderItems'));
     }
 
     public function getLocations($id)
