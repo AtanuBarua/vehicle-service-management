@@ -2,7 +2,7 @@
 
 @section('body')
 <div class="sl-mainpanel">
-    
+
     @include('dashboard.include.breadcrumb')
 
     <div class="sl-pagebody">
@@ -33,7 +33,7 @@
                             <td>{{$service->name}}</td>
                             <td>{{$service->status == 1 ? 'Shown' : 'Hidden'}}</td>
                             <td>
-                                <a title="Edit" href="{{route('service.edit',['id'=>$service->id])}}"  class="btn btn-sm btn-primary"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                <a title="Edit" href="{{route('service.edit',['service'=>$service])}}"  class="btn btn-sm btn-primary"><i class="fa fa-pencil" aria-hidden="true"></i></a>
                                 <a title="Delete" href="#" id="{{$service->id}}" class="btn btn-sm btn-danger"
                                    onclick="event.preventDefault();
                                        var check = confirm('Are you sure you want to delete?');
@@ -41,7 +41,7 @@
                                        document.getElementById('deleteProductForm'+'{{$service->id}}').submit();
                                        }"
                                 ><i class="fa fa-trash" aria-hidden="true"></i></a>
-                                <form id="deleteProductForm{{$service->id}}" action="{{route('service.destroy',['id'=>$service->id])}}" method="post">
+                                <form id="deleteProductForm{{$service->id}}" action="{{route('service.destroy',['service'=>$service])}}" method="post">
                                     @csrf
                                     @method('DELETE')
                                     <input type="hidden" name="id" value="{{$service->id}}">

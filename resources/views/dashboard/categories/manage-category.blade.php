@@ -6,7 +6,7 @@
     @include('dashboard.include.breadcrumb')
 
     <div class="sl-pagebody">
-        
+
         <div class="card pd-20 pd-sm-40">
             <h3 class="text-center text-success"> {{Session::get('message')}} </h3>
 
@@ -32,7 +32,7 @@
                             <td><img src="{{$category->image}}" height="100"></td>
                             <td>{{$category->status == 1 ? 'Active' : 'Inactive'}}</td>
                             <td>
-                                <a title="Edit" href="{{route('category.edit',['id'=>$category->id])}}"  class="btn btn-primary"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                                <a title="Edit" href="{{route('category.edit',['category'=>$category])}}"  class="btn btn-primary"><i class="fa fa-pencil" aria-hidden="true"></i></a>
                                 <a title="Delete" href="#" id="{{$category->id}}" class="btn btn-danger"
                                  onclick="event.preventDefault();
                                  var check = confirm('Are you sure you want to delete?');
@@ -41,7 +41,7 @@
                                  }"
                                  ><i class="fa fa-trash" aria-hidden="true"></i>
                              </a>
-                             <form id="deleteCategoryForm{{$category->id}}" action="{{route('category.destroy',['id'=>$category->id])}}" method="post">
+                             <form id="deleteCategoryForm{{$category->id}}" action="{{route('category.destroy',['category'=>$category])}}" method="post">
                                 @csrf
                                 @method('DELETE')
                                 <input type="hidden" name="id" value="{{$category->id}}">

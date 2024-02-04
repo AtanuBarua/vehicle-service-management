@@ -2,7 +2,7 @@
 
 @section('body')
 <div class="sl-mainpanel">
-    
+
     @include('dashboard.include.breadcrumb')
 
     <div class="sl-pagebody">
@@ -36,14 +36,14 @@
                             <td><img src="{{$brand->image}}" height="70"></td>
                             <td>{{$brand->status == 1 ? 'Active' : 'Inactive'}}</td>
                             <td>
-                                <a title="Edit" href="{{route('brand.edit',['id'=>$brand->id])}}"
+                                <a title="Edit" href="{{route('brand.edit',['brand'=>$brand])}}"
                                     class="btn btn-primary"><i class="fa fa-pencil" aria-hidden="true"></i></a>
                                 <a title="Delete" href="#" id="{{$brand->id}}" class="btn btn-danger" onclick="event.preventDefault();
                                        var check = confirm('Are you sure you want to delete?');
                                        if(check){
                                        document.getElementById('deleteBrandForm'+'{{$brand->id}}').submit();
                                        }"><i class="fa fa-trash" aria-hidden="true"></i></a>
-                                <form id="deleteBrandForm{{$brand->id}}" action="{{route('brand.destroy',['id'=>$brand->id])}}"
+                                <form id="deleteBrandForm{{$brand->id}}" action="{{route('brand.destroy',['brand'=>$brand])}}"
                                     method="post">
                                     @csrf
                                     @method('DELETE')

@@ -3,7 +3,7 @@
 
 @section('body')
 <div class="sl-mainpanel">
-    
+
     @include('dashboard.include.breadcrumb')
 
     <div class="sl-pagebody">
@@ -12,7 +12,7 @@
         <div class="card pd-20 pd-sm-40">
             <h3 class="text-center text-success"> {{Session::get('message')}} </h3>
 
-            <form name="editProductForm" action="{{route('service.update',['id'=>$service->id])}}" method="post"
+            <form name="editProductForm" action="{{route('service.update',['service'=>$service])}}" method="post"
                 class="form-horizontal" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')

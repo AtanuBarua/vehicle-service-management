@@ -2,7 +2,7 @@
 
 @section('body')
 <div class="sl-mainpanel">
-    
+
     @include('dashboard.include.breadcrumb')
 
     <div class="sl-pagebody">
@@ -43,7 +43,7 @@
                             <td>{{$product->stock}}</td>
                             <td>{{$product->status == 1 ? 'Shown' : 'Hidden'}}</td>
                             <td>
-                                <a title="Edit" href="{{route('product.edit',['id'=>$product->id])}}"
+                                <a title="Edit" href="{{route('product.edit',['product'=>$product])}}"
                                     class="btn btn-sm btn-primary"><i class="fa fa-pencil" aria-hidden="true"></i></a>
                                 <a title="Delete" href="#" id="{{$product->id}}" class="btn btn-sm btn-danger" onclick="event.preventDefault();
                                        var check = confirm('Are you sure you want to delete?');
@@ -51,7 +51,7 @@
                                        document.getElementById('deleteProductForm'+'{{$product->id}}').submit();
                                        }"><i class="fa fa-trash" aria-hidden="true"></i></a>
                                 <form id="deleteProductForm{{$product->id}}"
-                                    action="{{route('product.destroy',['id'=>$product->id])}}" method="post">
+                                    action="{{route('product.destroy',['product'=>$product])}}" method="post">
                                     @csrf
                                     @method('DELETE')
                                 </form>

@@ -20,6 +20,21 @@ class Order extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function getOrders($with=[],$search=[], $select = '*', $latest = 'id', $paginate=false){
+        $query = $this->query();
+        if (!empty($with)) {
+            $query->with($with);
+        }
+        $query->select($select);
+        if ($paginate) {
+            $result = $query->latest($latest)->paginate($search['paginate']);
+        }
+        else{
+            $result = $query->latest($latest)->get();
+        }
+        return $result;
+    }  
+
     public function createOrder($data)
     {
         return $this->create($data);
