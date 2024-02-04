@@ -75,8 +75,9 @@
 
                         <div class=" row col-lg-4">
                             <div class="form-group">
-                                <label class="form-control-label">Product Image: <span
-                                        class="tx-danger">*</span></label>
+                                <label class="form-control-label">Product Image:
+                                    {{-- <span class="tx-danger">*</span> --}}
+                                </label>
                                 @error('image')
                                 <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
@@ -118,7 +119,7 @@
                                 <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
                                 <div class="col-md-9 radio">
-                                    <label> <input type="radio" name="availability" value="1">
+                                    <label> <input checked type="radio" name="availability" value="1">
                                         Yes </label>
                                     <label> <input type="radio" name="availability" value="0">
                                         No </label>
@@ -135,7 +136,7 @@
                                 <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
                                 <div class="col-md-9 radio">
-                                    <label> <input type="radio" name="status" value="1">
+                                    <label> <input checked type="radio" name="status" value="1">
                                         Show </label>
                                     <label> <input type="radio" name="status" value="0">
                                         Hide </label>

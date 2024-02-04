@@ -32,7 +32,9 @@ class ProductController extends Controller
 
     public function index()
     {
-        $products = $this->product_service->getProducts([],true);
+        $search['relation'] = true;
+        $search['paginate'] = 10;
+        $products = (new ProductService)->getProducts($search);
         return view('dashboard.products.manage-product', compact('products'));
     }
 

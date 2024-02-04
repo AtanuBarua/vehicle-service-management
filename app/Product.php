@@ -11,6 +11,7 @@ class Product extends Model
     const ACTIVE = 1;
     const INACTIVE = 0;
     const IMAGE_PATH = 'product-images/';
+    const NO_IMAGE_PATH = self::IMAGE_PATH . 'no_image.jpg';
 
     public function brand(){
         return $this->belongsTo(Brand::class);
@@ -24,9 +25,10 @@ class Product extends Model
         return $this->hasMany(Review::class);
     }
 
-    public function getAllProducts($search = [], $relation = false){
+    public function getAllProducts($search = []){
         $query = $this->query();
-        if($relation){
+
+        if(isset($search['relation']) && $search['relation']){
             $query->with('category');
         }
         if (isset($search['category_id'])) {
@@ -38,18 +40,19 @@ class Product extends Model
         if (isset($search['status'])) {
             $query->where('status',$search['status']);
         }
-        if (empty($search['take'])) {
-            $result = $query->get();
+        if (!empty($search['take'])) {
+            $query->take($search['take']);
         }
-        else{
-            $result = $query->take($search['take'])->get();
-        }
+
         if (!empty($search['order_by'])) {
             $query->latest($search['order_by'] ?? 'updated_at');
         }
         if (!empty($search['paginate'])) {
-            $result = $query->paginate($search['paginate_number']);
+            $result = $query->paginate($search['paginate']);
+        } else {
+            $result = $query->get();
         }
+
         return $result;
     }
 

@@ -18,7 +18,7 @@
                 <div class="sl-page-title d-flex justify-content-end">
                     <a type="button" href="{{route('product.create')}}" class="btn btn-success">Add Product</a>
                 </div>
-                <table id="datatable1" class="table display responsive nowrap">
+                <table id="" class="table display responsive nowrap">
                     <thead>
                         <tr>
                             <th>Category</th>
@@ -62,6 +62,7 @@
                         @endforeach
                     </tbody>
                 </table>
+                {{$products->links()}}
             </div><!-- table-wrapper -->
         </div><!-- card -->
 
@@ -79,8 +80,8 @@
 {{--<script src="{{asset('/')}}admin/assets/lib/bootstrap/bootstrap.js"></script>--}}
 <script src="{{asset('/')}}admin/assets/lib/perfect-scrollbar/js/perfect-scrollbar.jquery.js"></script>
 <script src="{{asset('/')}}admin/assets/lib/highlightjs/highlight.pack.js"></script>
-<script src="{{asset('/')}}admin/assets/lib/datatables/jquery.dataTables.js"></script>
-<script src="{{asset('/')}}admin/assets/lib/datatables-responsive/dataTables.responsive.js"></script>
+{{-- <script src="{{asset('/')}}admin/assets/lib/datatables/jquery.dataTables.js"></script> --}}
+{{-- <script src="{{asset('/')}}admin/assets/lib/datatables-responsive/dataTables.responsive.js"></script> --}}
 <script src="{{asset('/')}}admin/assets/lib/select2/js/select2.min.js"></script>
 
 <script>

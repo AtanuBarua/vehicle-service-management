@@ -7,6 +7,7 @@ use Illuminate\Support\ServiceProvider;
 use App\Category;
 use View;
 use Cart;
+use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -36,5 +37,7 @@ class AppServiceProvider extends ServiceProvider
         // View::composer(['front.master','front.home.index'], function ($view){
         //     $view->with('categories', Category::where('status',1)->get());
         // });
+
+        Paginator::useBootstrap();
     }
 }

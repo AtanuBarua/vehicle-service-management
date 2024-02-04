@@ -148,7 +148,7 @@
                                 <div class="product-img">
                                     <a href="{{route('single-product',['slug'=>$product->slug])}}">
 
-                                        @if(str_contains($product->image,'product-images'))
+                                        {{-- @if(str_contains($product->image,'product-images'))
                                         <img loading="lazy" class="primary-img" src="{{asset($product->image)}}"
                                             alt="Uren's Product Image">
                                         <img loading="lazy" class="secondary-img" src="{{asset($product->image)}}"
@@ -161,7 +161,14 @@
                                         <img loading="lazy" class="secondary-img"
                                             src="{{asset($product->image)}}?random=<?php echo $i ?>"
                                             alt="Uren's Product Image">
-                                        @endif
+                                        @endif --}}
+
+                                        <img loading="lazy" class="primary-img"
+                                            src="{{ asset($product->image) }}"
+                                            alt="Uren's Product Image">
+                                        <img loading="lazy" class="secondary-img"
+                                            src="{{asset($product->image)}}"
+                                            alt="Uren's Product Image">
 
                                     </a>
                                     @if($product->availability==1)
