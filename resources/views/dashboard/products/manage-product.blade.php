@@ -15,10 +15,31 @@
             <h3 class="text-center text-success"> {{Session::get('message')}} </h3>
 
             <div class="table-wrapper">
-                <div class="sl-page-title d-flex justify-content-end">
-                    <a type="button" href="{{route('product.create')}}" class="btn btn-success">Add Product</a>
-                </div>
-                <table id="" class="table display responsive nowrap">
+                <form action="{{route('product.index')}}" method="get">
+                    <div class="sl-page-title d-flex justify-content-between align-items-center">
+                        <div class="col-8 d-flex">
+                                <input value="{{$search['name'] ?? ''}}" name="name" type="text" class="form-control col-4" placeholder="Product Name">
+                                <select name="category_id" id="" class="form-control ml-2 col-2">
+                                    <option value="">Category</option>
+                                    @foreach ($categories as $item)
+                                        <option {{$search['category_id'] == $item->id ? 'selected': ''}} value="{{$item->id}}">{{$item->name}}</option>
+                                    @endforeach
+                                </select>
+                                <select name="status" id="" class="form-control ml-2 col-2">
+                                    <option value="">Status</option>
+                                    <option {{$search['status'] == '1' ? 'selected': ''}} value="1">Shown</option>
+                                    <option {{$search['status'] == '0' ? 'selected': ''}} value="0">Hidden</option>
+                                </select>
+                                <input value="{{$search['min_price'] ?? ''}}" name="min_price" type="text" class="form-control col-2 ml-2" placeholder="Min Price">
+                                <input value="{{$search['max_price'] ?? ''}}" name="max_price" type="text" class="form-control col-2 ml-2" placeholder="Max Price">
+
+                                <button type="submit" class="btn btn-primary ml-2">Search</button>
+                        </div>
+                        <a type="button" href="{{route('product.create')}}" class="btn btn-success">Add Product</a>
+                    </div>
+                </form>
+                <a class="ml-3" href="{{route('product.index')}}">Reset Result</a>
+                <table id="" class="table display responsive nowrap mt-2">
                     <thead>
                         <tr>
                             <th>Category</th>
@@ -33,6 +54,7 @@
                     </thead>
                     <tbody>
                         @php($i=1)
+                        @if (count($products) > 0)
                         @foreach($products as $product)
                         <tr>
                             <td>{{$product->category->name}}</td>
@@ -60,6 +82,9 @@
                         </tr>
                         @php($i++)
                         @endforeach
+                        @else
+                        <h4 class="text-danger text-center">No data found</h4>
+                        @endif
                     </tbody>
                 </table>
                 {{$products->links()}}

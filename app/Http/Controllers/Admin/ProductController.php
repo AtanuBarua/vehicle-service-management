@@ -30,12 +30,24 @@ class ProductController extends Controller
         $this->brand_service = $brand_service;
     }
 
-    public function index()
+    public function index(Request $request)
     {
+        $data['search'] = $this->handleSearchData($request);
+        // dd($data['search']);
+        $data['categories'] = Category::get();
+        $data['products'] = (new ProductService)->getProducts($data['search']);
+        return view('dashboard.products.manage-product', $data);
+    }
+
+    private function handleSearchData($request){
         $search['relation'] = true;
         $search['paginate'] = 10;
-        $products = (new ProductService)->getProducts($search);
-        return view('dashboard.products.manage-product', compact('products'));
+        $search['name'] = $request->name;
+        $search['status'] = $request->status;
+        $search['category_id'] = $request->category_id;
+        $search['min_price'] = $request->min_price;
+        $search['max_price'] = $request->max_price;
+        return $search;
     }
 
     /**

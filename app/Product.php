@@ -31,24 +31,34 @@ class Product extends Model
         if(isset($search['relation']) && $search['relation']){
             $query->with('category');
         }
-        if (isset($search['category_id'])) {
+        if (!empty($search['category_id'])) {
             $query->where('category_id',$search['category_id']);
         }
-        if (isset($search['brand_id'])) {
+        if (!empty($search['brand_id'])) {
             $query->where('brand_id',$search['brand_id']);
         }
         if (isset($search['status'])) {
             $query->where('status',$search['status']);
+        }
+        if (!empty($search['name'])) {
+            $query->where('name','LIKE','%'.$search['name'].'%');
+        }
+        if (!empty($search['min_price'])) {
+            $query->where('regular_price','>=', $search['min_price']);
+        }
+        if (!empty($search['max_price'])) {
+            $query->where('regular_price','<=', $search['max_price']);
         }
         if (!empty($search['take'])) {
             $query->take($search['take']);
         }
 
         if (!empty($search['order_by'])) {
-            $query->latest($search['order_by'] ?? 'updated_at');
+            $query->latest($search['order_by'] ?? 'created_at');
         }
+        // dd($query->toSql());
         if (!empty($search['paginate'])) {
-            $result = $query->paginate($search['paginate']);
+            $result = $query->paginate($search['paginate'])->withQueryString();
         } else {
             $result = $query->get();
         }
