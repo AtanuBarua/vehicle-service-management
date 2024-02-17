@@ -72,7 +72,7 @@ class Product extends Model
         if (!empty($search['order_by'])) {
             $query->latest($search['order_by'] ?? 'created_at');
         }
-        dd($query->toSql());
+        // dd($query->toSql());
         if (!empty($search['paginate'])) {
             $result = $query->paginate($search['paginate'])->withQueryString();
         } else {
