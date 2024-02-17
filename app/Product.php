@@ -10,8 +10,24 @@ class Product extends Model
 
     const ACTIVE = 1;
     const INACTIVE = 0;
+    const AVAILABLE = 1;
+    const NOT_AVAILABLE = 0;
     const IMAGE_PATH = 'product-images/';
     const NO_IMAGE_PATH = self::IMAGE_PATH . 'no_image.jpg';
+
+    public static function availabilityMapping() {
+        return [
+            self::AVAILABLE => 'Available',
+            self::NOT_AVAILABLE => 'Not Available',
+        ];
+    }
+
+    public static function statusMapping() {
+        return [
+            self::ACTIVE => 'Shown',
+            self::INACTIVE => 'Hidden',
+        ];
+    }
 
     public function brand(){
         return $this->belongsTo(Brand::class);

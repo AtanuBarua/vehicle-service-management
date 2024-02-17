@@ -17,7 +17,7 @@
             <div class="table-wrapper">
                 <form action="{{route('product.index')}}" method="get">
                     <div class="sl-page-title d-flex justify-content-between align-items-center">
-                        <div class="col-8 d-flex">
+                        <div class=" d-flex col-10">
                                 <input value="{{$search['name'] ?? ''}}" name="name" type="text" class="form-control col-4" placeholder="Product Name">
                                 <select name="category_id" id="" class="form-control ml-2 col-2">
                                     <option value="">Category</option>
@@ -34,11 +34,19 @@
                                 <input value="{{$search['max_price'] ?? ''}}" name="max_price" type="text" class="form-control col-2 ml-2" placeholder="Max Price">
 
                                 <button type="submit" class="btn btn-primary ml-2">Search</button>
+                                <a class="ml-3" href="{{route('product.index')}}">Reset Result</a>
                         </div>
-                        <a type="button" href="{{route('product.create')}}" class="btn btn-success">Add Product</a>
                     </div>
                 </form>
-                <a class="ml-3" href="{{route('product.index')}}">Reset Result</a>
+
+                <div class="d-flex justify-content-between">
+                    <form action="{{route('export-products')}}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn btn-primary ml-3">Export</button>
+                    </form>
+                    <a type="button" href="{{route('product.create')}}" class="btn btn-success">Add Product</a>
+                </div>
+
                 <table id="" class="table display responsive nowrap mt-2">
                     <thead>
                         <tr>

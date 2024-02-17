@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Brand;
 use App\Category;
+use App\Exports\ProductsExport;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
@@ -13,6 +14,7 @@ use App\Services\ProductService;
 use DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProductController extends Controller
 {
@@ -137,5 +139,9 @@ class ProductController extends Controller
             return redirect('/product/')->with('danger', 'Something went wrong!');
         }
 
+    }
+
+    public function exportReport(Request $request) {
+        return Excel::download(new ProductsExport, 'products.xlsx');
     }
 }

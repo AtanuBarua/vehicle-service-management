@@ -75,6 +75,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::resource('category', 'Admin\CategoryController');
     Route::resource('brand', 'Admin\BrandController');
     Route::resource('product', 'Admin\ProductController');
+    Route::post('export-products',[ProductController::class,'exportReport'])->name('export-products');
 
     Route::get('/order/manage', 'Admin\OrderController@manageOrders')->name('order.manage');
     Route::get('/order/process/{order}', 'Admin\OrderController@processOrder')->name('order.process');
@@ -101,7 +102,7 @@ Route::resource('location', 'Admin\LocationController');
 
 Route::group(['middleware' => ['admin']], function () {
 
-    //Route::get('/manage-store/','HomeController@manageStore')->name('manage-store'); 
+    //Route::get('/manage-store/','HomeController@manageStore')->name('manage-store');
     Route::get('/booking-invoice', 'HomeController@downloadBookingInvoice')->name('booking-invoice-download');
     Route::get('admin-invoice-download/{id}', 'HomeController@downloadInvoice')->name('admin-invoice-download');
 
