@@ -23,7 +23,7 @@ class CategoryController extends Controller
     public function index()
     {
         $this->authorize('viewAny', Category::class);
-        $categories = Category::get();
+        $categories = (new Category())->getAllCategories();
         $pageTitle = 'Manage Category';
         return view('dashboard.categories.manage-category', compact('categories','pageTitle'));
     }
@@ -65,7 +65,7 @@ class CategoryController extends Controller
             'status' => $request->status,
         ];
         (new Category())->createCategory($data);
-        
+
         return back()->with('message', 'Category created successfully!!');
     }
 
@@ -119,10 +119,10 @@ class CategoryController extends Controller
             $imageName = $this->preparareImage($categoryImage);
             $directory = 'category-images/';
             Image::make($categoryImage)->resize(600, 600)->save($directory . $imageName);
-            $data['image'] = $directory . $imageName;    
+            $data['image'] = $directory . $imageName;
             $category->updateCategory($data,$category->id);
-        } 
-        
+        }
+
         $category->updateCategory($data,$category->id);
         return redirect('/category/')->with('message', 'Category updated successfully!!');
     }

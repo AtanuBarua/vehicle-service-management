@@ -15,8 +15,12 @@ class Category extends Model
         return $this->hasMany(Product::class);
     }
 
-    public function getAllActiveCategories(){
-        return $this->query()->where('status', self::ACTIVE)->get();
+    public function getAllCategories($search = []){
+        $query = $this->query();
+        if (!empty($search['status'])) {
+            $query = $query->where($search['status']);
+        }
+        return $query->get();
     }
 
     public function findCategoryBySlug($slug){

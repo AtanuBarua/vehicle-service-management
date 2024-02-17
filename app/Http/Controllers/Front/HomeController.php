@@ -28,7 +28,7 @@ class HomeController extends Controller
     public function index()
     {
         // Cart::destroy();
-        $categories = (new Category())->getAllActiveCategories();
+        $categories = (new Category())->getAllCategories(['status'=>Category::ACTIVE]);
         $brands = (new Brand())->getAllActiveBrands();
         $products = new Product();
         $newProducts = $products->newProducts(['status'=> Product::ACTIVE,'take'=>10]);

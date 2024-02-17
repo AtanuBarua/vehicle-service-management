@@ -23,19 +23,10 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    protected $product_service;
-    protected $brand_service;
-
-    public function __construct(ProductService $product_service, BrandService $brand_service)
-    {
-        $this->product_service = $product_service;
-        $this->brand_service = $brand_service;
-    }
 
     public function index(Request $request)
     {
         $data['search'] = $this->handleSearchData($request);
-        // dd($data['search']);
         $data['categories'] = Category::get();
         $data['products'] = (new ProductService)->getProducts($data['search']);
         return view('dashboard.products.manage-product', $data);
@@ -59,7 +50,7 @@ class ProductController extends Controller
      */
     public function create()
     {
-        $data['brands'] = $this->brand_service->getBrands();
+        $data['brands'] = (new BrandService())->getBrands();
         $data['categories'] = Category::get();
         return view('dashboard.products.add-product', compact('data'));
     }
@@ -73,7 +64,7 @@ class ProductController extends Controller
     public function store(ProductRequest $request)
     {
         try {
-            $this->product_service->storeProduct($request);
+            (new ProductService())->storeProduct($request);
             return redirect()->route('product.index')->with('message', 'Product created successfully!!');
         } catch (\Throwable $th) {
             Log::error('PRODUCT_STORE_LOG',['exception'=>$th->getMessage()]);
@@ -100,7 +91,7 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $brands = $this->brand_service->getBrands();
+        $brands = (new BrandService())->getBrands();
         $categories = Category::get();
         return view('dashboard.products.edit-product', compact('brands', 'categories', 'product'));
     }
@@ -115,7 +106,7 @@ class ProductController extends Controller
     public function update(ProductRequest $request, Product $product)
     {
         try {
-            $this->product_service->updateProduct($request, $product);
+            (new ProductService())->updateProduct($request, $product);
             return redirect('/product/')->with('message', 'Product updated successfully!!');
         } catch (\Throwable $th) {
             Log::error('PRODUCT_UPDATE_LOG',['exception'=>$th->getMessage()]);
@@ -132,7 +123,7 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         try {
-            $this->product_service->deleteProduct($product);
+            (new ProductService())->deleteProduct($product);
             return redirect('/product/')->with('message', 'Product deleted successfully!!');
         } catch (\Throwable $th) {
             Log::error('PRODUCT_DELETE_LOG',['exception'=>$th->getMessage()]);
