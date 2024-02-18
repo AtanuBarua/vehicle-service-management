@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\User;
 use Closure;
 use Illuminate\Support\Facades\Auth;
 
@@ -17,18 +18,9 @@ class IsAdmin
      */
     public function handle($request, Closure $next)
     {
-        // if(auth()->user()->type == 1){
-        // return $next($request);
-    //}
-        //return redirect('/')->with('error','You have no admin access');
-        if (Auth::guard('admin')->user() != null) {
-            // code...
+        if (Auth::user()->user_type == User::TYPE_ADMIN) {
             return $next($request);
-            //return "hi";
         }
-
-        return redirect('/login/admin')->with('error','You dont have admin access');
+        return redirect()->back()->with('error', 'Permission denied');
     }
-
-
 }
