@@ -18,7 +18,7 @@ class Category extends Model
     public function getAllCategories($search = []){
         $query = $this->query();
         if (!empty($search['status'])) {
-            $query = $query->where($search['status']);
+            $query = $query->where('status',$search['status']);
         }
         return $query->get();
     }
