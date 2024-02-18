@@ -69,7 +69,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 //Admin--------------------------------------------------------------------------------------------------
 Auth::routes(['verify' => true]);
 
-Route::group(['middleware' => ['auth', 'verified']], function () {
+Route::group(['middleware' => ['auth', 'verified','admin']], function () {
 
     Route::view('/dashboard', 'dashboard.index')->name('dashboard');
     Route::resource('category', 'Admin\CategoryController');

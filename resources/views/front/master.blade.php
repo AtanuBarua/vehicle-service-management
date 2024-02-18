@@ -66,13 +66,14 @@
                             <div class="ht-right_area">
                                 <div class="ht-menu">
                                     <ul>
-                                        <li><a href="{{ route('home') }}">My Account<i
+                                        <li><a href="#">My Account<i
                                                     class="fa fa-chevron-down"></i></a>
                                             <ul class="ht-dropdown ht-my_account">
                                                 @guest
                                                     <li><a href="{{ route('register') }}">Register</a></li>
                                                     <li class="active"><a href="{{ route('login') }}">Login</a></li>
                                                 @else
+                                                    <li><a href="{{ route('home') }}">Panel</a></li>
                                                     <li class="active"><a href="{{ route('logout') }}"
                                                             onclick="event.preventDefault();
                                                 document.getElementById('logout-form').submit();">Logout</a>
