@@ -25,6 +25,14 @@ class Brand extends Model
     }
 
     public function findBrandBySlug($slug){
-        return $this->query()->where('slug',$slug)->first();
+        if (!empty($name)) {
+            return $this->query()->where('slug',$slug)->first();
+        }
+    }
+
+    public function findBrandByName($name){
+        if (!empty($name)) {
+            return $this->query()->where('name','LIKE', '%' . $name . '%')->first();
+        }
     }
 }

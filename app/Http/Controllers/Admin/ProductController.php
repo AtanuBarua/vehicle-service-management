@@ -8,12 +8,11 @@ use App\Exports\ProductsExport;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
+use App\Imports\ProductsImport;
 use App\Product;
 use App\Services\BrandService;
 use App\Services\ProductService;
-use DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ProductController extends Controller
@@ -133,6 +132,24 @@ class ProductController extends Controller
     }
 
     public function exportReport(Request $request) {
-        return Excel::download(new ProductsExport, 'products.xlsx');
+        try {
+            return Excel::download(new ProductsExport, 'products.xlsx');
+        } catch (\Throwable $th) {
+            Log::error('PRODUCT_EXPORT_LOG',['exception'=>$th->getMessage()]);
+            return redirect()->back()->with('message','Something went wrong!');
+        }
+    }
+
+    public function importReport(Request $request) {
+        try {
+            $request->validate([
+                'products' => 'required|file|mimes:xlsx'
+            ]);
+            Excel::import(new ProductsImport, $request->file('products'));
+            return redirect()->back()->with('message', 'File has been queued for import.');
+        } catch (\Throwable $th) {
+            Log::error('PRODUCT_IMPORT_LOG',['exception'=>$th->getMessage()]);
+            return redirect()->back()->with('danger','Something went wrong!');
+        }
     }
 }

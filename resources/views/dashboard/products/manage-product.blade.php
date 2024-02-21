@@ -12,7 +12,17 @@
         </div><!-- sl-page-title -->--}}
 
         <div class="card pd-20 pd-sm-40">
-            <h3 class="text-center text-success"> {{Session::get('message')}} </h3>
+            @if (Session::has('message'))
+            <div class="alert alert-success" role="alert">
+                {{Session::get('message')}}
+            </div>
+            @endif
+            @if (Session::has('danger'))
+            <div class="alert alert-danger" role="alert">
+                {{Session::get('danger')}}
+            </div>
+            @endif
+
 
             <div class="table-wrapper">
                 <form action="{{route('product.index')}}" method="get">
@@ -40,11 +50,23 @@
                 </form>
 
                 <div class="d-flex justify-content-between">
-                    <form action="{{route('export-products')}}" method="POST">
-                        @csrf
-                        <button type="submit" class="btn btn-primary ml-3">Export</button>
-                    </form>
-                    <a type="button" href="{{route('product.create')}}" class="btn btn-success">Add Product</a>
+                    <div class="">
+                        <form action="{{route('export-products')}}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-primary ml-3">Export</button>
+                        </form>
+                    </div>
+
+                    <div class="col-5">
+                        <form action="{{route('import-products')}}" method="POST" enctype="multipart/form-data" class="d-flex">
+                            {{-- <div class="row"> --}}
+                                    @csrf
+                                    <input required type="file" name="products" class="form-control">
+                                    <button type="submit" class="btn btn-primary ml-3">Bulk Upload</button>
+                                {{-- </div> --}}
+                            </form>
+                    </div>
+                    <a type="button" href="{{route('product.create')}}" class="btn btn-success col-2">Add Product</a>
                 </div>
 
                 <table id="" class="table display responsive nowrap mt-2">

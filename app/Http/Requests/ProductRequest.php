@@ -24,14 +24,14 @@ class ProductRequest extends FormRequest
     public function rules()
     {
         $rules = [
-            'category_id' => 'required',
-            'brand_id' => 'required',
-            'name' => 'required',
-            'description' => 'required',
+            'category_id' => 'required|integer',
+            'brand_id' => 'required|integer',
+            'name' => 'required|unique:products',
             'description' => 'required',
             'image' => 'mimes:jpeg,png,jpg,gif|max:2048',
-            'regular_price' => 'required',
-            'stock' => 'required',
+            'regular_price' => 'required|numeric|gt:0|decimal:2',
+            'discount_price' => 'numeric|gt:0|decimal:2',
+            'stock' => 'required|integer|gt:0',
             'availability' => 'required',
             'status' => 'required'
         ];

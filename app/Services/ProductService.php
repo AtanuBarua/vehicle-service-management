@@ -35,8 +35,11 @@ class ProductService {
 
     public function storeProduct($request){
         $productImage = $request['image'];
-        $imageName = $this->storeImage($productImage, Product::IMAGE_PATH);
-        $request->merge(['image_name'=>$imageName]);
+        if ($productImage) {
+            $imageName = $this->storeImage($productImage, Product::IMAGE_PATH);
+            $request->merge(['image_name'=>$imageName]);
+        }
+
         $data = $this->prepareData($request);
         return (new Product())->createProduct($data);
     }

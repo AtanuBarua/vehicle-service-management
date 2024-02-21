@@ -24,7 +24,15 @@ class Category extends Model
     }
 
     public function findCategoryBySlug($slug){
-        return $this->query()->where('slug',$slug)->first();
+        if (!empty($slug)) {
+            return $this->query()->where('slug',$slug)->first();
+        }
+    }
+
+    public function findCategoryByName($name){
+        if (!empty($name)) {
+            return $this->query()->where('name','LIKE', '%' . $name . '%')->first();
+        }
     }
 
     public function createCategory($data){
