@@ -76,6 +76,7 @@ Route::group(['middleware' => ['auth', 'verified','admin']], function () {
     Route::resource('brand', 'Admin\BrandController');
     Route::resource('product', 'Admin\ProductController');
     Route::post('export-products',[ProductController::class,'exportReport'])->name('export-products');
+    Route::post('import-products',[ProductController::class,'importReport'])->name('import-products');
 
     Route::get('/order/manage', 'Admin\OrderController@manageOrders')->name('order.manage');
     Route::get('/order/process/{order}', 'Admin\OrderController@processOrder')->name('order.process');
